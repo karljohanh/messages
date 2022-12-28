@@ -24,6 +24,19 @@ io.on('connection', (socket) => {
   console.log(`User connected ${socket.id}`);
 
   // Write socket event listeners in here...
+
+  // joining room
+  socket.on("join_room", (data) => {
+    socket.join(data)
+    console.log(`user with id ${socket.id} joined room ${data}`)
+  })
+
+  // Sending messages
+  socket.on("send_message", (data) => {
+    console.log("server got ", data)
+    socket.to(data.room).emit("receive_message", data)
+  })
+
   socket.on("disconnect", () => {
     console.log("User disconnected")
   })
