@@ -1,12 +1,17 @@
-const express = require('express');
+// const express = require('express');
+// const http = require('http');
+// const cors = require('cors');
+// const { Server } = require('socket.io');
+import express from "express"
+import { createServer } from "http"
+import cors from "cors"
+import { Server } from "socket.io"
+
+const port = process.env.PORT || 4000;
+
 const app = express();
-const http = require('http');
-const cors = require('cors');
-const { Server } = require('socket.io');
-
 app.use(cors());
-
-const server = http.createServer(app);
+const server = createServer(app);
 
 const io = new Server(server, {
   cors: {
@@ -19,9 +24,12 @@ io.on('connection', (socket) => {
   console.log(`User connected ${socket.id}`);
 
   // Write socket event listeners in here...
+  socket.on("disconnect", () => {
+    console.log("User disconnected")
+  })
 });
 
-server.listen(4000, () => console.log('Server is running on port 4000'));
+server.listen(port, () => console.log(`Server is running on port ${port}`));
 
 //https://www.freecodecamp.org/news/build-a-realtime-chat-app-with-react-express-socketio-and-harperdb/
 // Denna guiden var väldigt bra att läsa igenom för att förstå bättre!
