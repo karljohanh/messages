@@ -1,45 +1,46 @@
-import { useState } from "react"
-import io from "socket.io-client";
+import { useState } from 'react';
+import io from 'socket.io-client';
 
-import Chat from "./components/Chat"
+import Chat from './components/Chat';
 import './App.css';
 
-const server = "http://localhost:4000";
-const socket = io.connect(server)
+const server = 'http://localhost:4000';
+const socket = io.connect(server);
 
 function App() {
-  const [userName, setUserName] = useState("")
-  const [room, setRoom] = useState("")
+  const [userName, setUserName] = useState('');
+  const [room, setRoom] = useState('');
 
   function joinRoom() {
     if (userName && room) {
-      socket.emit("join_room", room)
+      socket.emit('join_room', room);
     }
+  }
+  function leaveRoom() {
+    socket.emit('leave_room', { userName, room });
   }
 
   function handleNameChange(e) {
-    setUserName(e.target.value)
+    setUserName(e.target.value);
   }
   function handleRoomChange(e) {
-    if (userName)
-    setRoom(e.target.value)
+    if (userName) setRoom(e.target.value);
   }
 
   socket.on('connection', () => {
-      console.log(`I'm connected with the back-end`);
-});
+    console.log(`I'm connected with the back-end`);
+  });
 
   return (
     <div className="App">
       <h1>Join room</h1>
-      <input type="text" placeholder="Name" onChange={handleNameChange}/>
-      <input type="text" placeholder="Room-id" onChange={handleRoomChange}/>
+      <input type="text" placeholder="Name" onChange={handleNameChange} />
+      <input type="text" placeholder="Room-id" onChange={handleRoomChange} />
       <button onClick={joinRoom}>Join room</button>
-      <Chat socket={socket} userName={userName} room={room}/>
+      <Chat socket={socket} userName={userName} room={room} />
+      <button onClick={leaveRoom}>Leave room</button>
     </div>
   );
 }
-
-
 
 export default App;

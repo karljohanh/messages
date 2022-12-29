@@ -33,8 +33,19 @@ io.on('connection', (socket) => {
     socket.to(data.room).emit('receive_message', data);
   });
 
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
+  socket.on('leave_room', (data) => {
+    const { userName, room } = data;
+    socket.leave(room);
+    console.log(`User ${userName} left the room`);
+  });
+
+  socket.on('disconnect', (reason, user) => {
+    if (
+      reason === 'io server disconnect' ||
+      reason === 'client namespace disconnect'
+    ) {
+      console.log('User disconnected');
+    }
   });
 });
 
