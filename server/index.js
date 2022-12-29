@@ -1,11 +1,7 @@
-// const express = require('express');
-// const http = require('http');
-// const cors = require('cors');
-// const { Server } = require('socket.io');
-import express from "express"
-import { createServer } from "http"
-import cors from "cors"
-import { Server } from "socket.io"
+import express from 'express';
+import { createServer } from 'http';
+import cors from 'cors';
+import { Server } from 'socket.io';
 
 const port = process.env.PORT || 4000;
 
@@ -26,20 +22,20 @@ io.on('connection', (socket) => {
   // Write socket event listeners in here...
 
   // joining room
-  socket.on("join_room", (data) => {
-    socket.join(data)
-    console.log(`user with id ${socket.id} joined room ${data}`)
-  })
+  socket.on('join_room', (data) => {
+    socket.join(data);
+    console.log(`user with id ${socket.id} joined room ${data}`);
+  });
 
   // Sending messages
-  socket.on("send_message", (data) => {
-    console.log("server got ", data)
-    socket.to(data.room).emit("receive_message", data)
-  })
+  socket.on('send_message', (data) => {
+    console.log('server got ', data);
+    socket.to(data.room).emit('receive_message', data);
+  });
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected")
-  })
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
 });
 
 server.listen(port, () => console.log(`Server is running on port ${port}`));
