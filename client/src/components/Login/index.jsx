@@ -1,6 +1,12 @@
-import { useState } from 'react';
 import axios from 'axios';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+
+import * as React from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
+import { Box, Stack } from '@mui/system';
+import { Grid, TextField, Button, Typography } from '@mui/material';
+import logo from '../../assets/chatlogo.png';
 
 const Login = () => {
   const [data, setData] = useState({ email: '', password: '' });
@@ -29,39 +35,67 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <div>
-        <div>
-          <form onSubmit={handleSubmit}>
-            <h1>Login to Your Account</h1>
-            <input
+    <>
+      <CssBaseline />
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          margin: '1rem 1rem 0rem 1rem',
+        }}
+      >
+        <Typography variant="h1" sx={{ fontSize: '2rem' }}>
+          messages
+        </Typography>
+        <Link to="/signup">
+          <Button variant="outlined" type="button">
+            Sign Up
+          </Button>
+        </Link>
+      </Box>
+      <Grid
+        container
+        spacing={0}
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
+        style={{ minHeight: '75vh' }}
+      >
+        <Box component="form" autoComplete="off" onSubmit={handleSubmit}>
+          <img src={logo} alt="logo" />
+          <Stack spacing={2} direction="row">
+            <TextField
+              variant="outlined"
+              id="outlined-basic"
+              label="email"
               type="email"
-              placeholder="Email"
               name="email"
               onChange={handleChange}
               value={data.email}
               required
             />
-            <input
+            <TextField
+              variant="outlined"
+              id="outlined-basic"
+              label="password"
               type="password"
-              placeholder="Password"
               name="password"
               onChange={handleChange}
               value={data.password}
               required
             />
-            {error && <div>{error}</div>}
-            <button type="submit">Sing In</button>
-          </form>
-        </div>
-        <div>
-          <h1>New Here?</h1>
-          <Link to="/signup">
-            <button type="button">Sing Up</button>
-          </Link>
-        </div>
-      </div>
-    </div>
+            <Button variant="contained" type="submit">
+              Login
+            </Button>
+          </Stack>
+          {error && (
+            <Stack alignItems="center">
+              <p>{error}</p>
+            </Stack>
+          )}
+        </Box>
+      </Grid>
+    </>
   );
 };
 
