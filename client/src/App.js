@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
 import Chat from './components/Chat';
+import Roomlist from './components/Roomlist';
 import './App.css';
 
 const server = 'http://localhost:4000';
@@ -11,20 +12,24 @@ function App() {
   const [userName, setUserName] = useState('');
   const [room, setRoom] = useState('');
 
+  // When new room is selected -> join new room
+  useEffect(() => {
+    if (room) joinRoom()
+  }, [room])
+
   function joinRoom() {
-    if (userName && room) {
-      socket.emit('join_room', room);
+    if (userName) {
+      socket.emit('join_room', { userName, room });
     }
-  }
-  function leaveRoom() {
-    socket.emit('leave_room', { userName, room });
   }
 
   function handleNameChange(e) {
     setUserName(e.target.value);
   }
+
   function handleRoomChange(e) {
-    if (userName) setRoom(e.target.value);
+    console.log(e.target.textContent)
+    setRoom(e.target.textContent);
   }
 
   socket.on('connection', () => {
@@ -33,12 +38,9 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Join room</h1>
+      <Roomlist onRoomChange={handleRoomChange} userName={userName}/>
       <input type="text" placeholder="Name" onChange={handleNameChange} />
-      <input type="text" placeholder="Room-id" onChange={handleRoomChange} />
-      <button onClick={joinRoom}>Join room</button>
-      <Chat socket={socket} userName={userName} room={room} />
-      <button onClick={leaveRoom}>Leave room</button>
+      {room? <Chat socket={socket} userName={userName} room={room} setRoom={setRoom}/> : ""}
     </div>
   );
 }

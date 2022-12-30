@@ -23,14 +23,17 @@ io.on('connection', (socket) => {
 
   // joining room
   socket.on('join_room', (data) => {
-    socket.join(data);
-    console.log(`user with id ${socket.id} joined room ${data}`);
+    const { userName, room } = data
+    socket.join(room);
+    // console.log("datan här: ", data)
+    // io.in(room).emit('receive_message', )
+    console.log(`${userName} joined room ${room}`);
   });
 
   // Sending messages
   socket.on('send_message', (data) => {
     console.log('server got ', data);
-    socket.to(data.room).emit('receive_message', data);
+    io.in(data.room).emit('receive_message', data);
   });
 
   socket.on('leave_room', (data) => {
