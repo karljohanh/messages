@@ -10,6 +10,10 @@ const server = http.createServer(app);
 
 const port = process.env.PORT || 5005;
 
+const CHAT_BOT = "ChatBot"
+let chatRoom = ""
+let allUsers = []
+
 module.exports = () => {
   const io = new Server(server, {
     cors: {
@@ -25,14 +29,36 @@ module.exports = () => {
 
     // joining room
     socket.on('join_room', (data) => {
-      socket.join(data);
-      console.log(`user with id ${socket.id} joined room ${data}`);
+      const {userName, room} = data
+      socket.join(room);
+
+      let createdTime = Date.now()
+
+      // Send all users in room
+      socket.to(room).emit("receive_message", {
+        message: `${userName} har gått med i rummet.`,
+        userName: CHAT_BOT,
+        createdTime
+      })
+
+      // Send new user only
+      socket.emit("receive_message", {
+        message: `Välkommen ${userName}`,
+        userName: CHAT_BOT,
+        createdTime
+      })
+
+      // Track users in room
+      chatRoom = room;
+      allUsers.push({id: socket.id, userName, room})
+      chatRoomUsers = allUsers.filter((user) => user.room === room);
+      socket.to(room).emit('chatroom_users', chatRoomUsers);
+      socket.emit('chatroom_users', chatRoomUsers);
     });
 
     // Sending messages
     socket.on('send_message', (data) => {
-      console.log('server got ', data);
-      socket.to(data.room).emit('receive_message', data);
+      io.in(data.room).emit('receive_message', data);
     });
 
     socket.on('leave_room', (data) => {
