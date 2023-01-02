@@ -64,6 +64,7 @@ module.exports = () => {
     socket.on('leave_room', (data) => {
       const { userName, room } = data;
       socket.leave(room);
+      allUsers = allUsers.filter((user) => user.id !== socket.id);
       console.log(`User ${userName} left the room`);
     });
 

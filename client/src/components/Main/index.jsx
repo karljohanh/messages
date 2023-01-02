@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { io } from 'socket.io-client';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 
 import Chat from '../Chat';
 
@@ -7,7 +9,9 @@ const server = 'http://localhost:5005/';
 const socket = io.connect(server);
 
 const Main = () => {
-  const [userName, setUserName] = useState('Marcus');
+  const [ userName, setUserName] = useState('Marcus');
+  // const [ user, setUser ] = ({userName:"Marcus"})
+  const [ allUsers, setAllUsers ] = useState([])
   const [room, setRoom] = useState('');
 
   const handleLogout = () => {
@@ -30,22 +34,34 @@ const Main = () => {
     console.log(`I'm connected with the back-end`);
   });
 
+  socket.on("chatroom_users", (users) => {
+    console.log("all users: ", allUsers)
+    setAllUsers(users)
+  })
+
+  function User({name}) {
+    return (
+      <p>{name}</p>
+    )
+  }
+
   return (
-    <div>
-      <h1>Inloggad</h1>
-      <div>
-        <p onClick={joinRoom}>JavaScript-snack</p>
-      </div>
-      {room ?
-      <Chat socket={socket} userName={userName} room={room}/> :
-      "<p>hej</p>"
-      }
-      {/* <input type="text" placeholder="Name" onChange={handleNameChange} /> */}
-      {/* <input type="text" placeholder="Room-id" onChange={handleRoomChange} /> */}
-      {/* <button onClick={joinRoom}>Join room</button> */}
-      <button onClick={leaveRoom}>Leave room</button>
-      <button onClick={handleLogout}>Log Out</button>
-    </div>
+    <Box sx={{ flexGrow: 1 }}>
+      <Grid container>
+        <Grid item sm={3}>
+          <p onClick={joinRoom}>JavaScript</p>
+        </Grid>
+        <Grid item sm={6}>
+          {room && <Chat socket={socket} userName={userName} room={room}/>}
+        </Grid>
+        <Grid item sm={3}>
+          {allUsers && allUsers.map((user) => {
+            return <User key={user.id} name={user.userName} />
+          })}
+        </Grid>
+        <button onClick={handleLogout}>Log Out</button>
+      </Grid>
+    </Box>
   );
 };
 

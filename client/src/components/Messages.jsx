@@ -1,11 +1,51 @@
 import { useState, useEffect } from 'react'
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Avatar from '@mui/material/Avatar';
+
+// Kolla hur
+import Typography from '@mui/material/Typography';
+import { ListItem } from '@mui/material';
+import { ListItemText } from "@mui/material"
+import { ListItemAvatar } from "@mui/material"
+
+function formatDateFromTimestamp(timestamp) {
+  return new Date(timestamp).toLocaleString();
+}
+
+function Message({msg}) {
+  return (
+      <ListItem>
+        <ListItemAvatar >
+          <Avatar sx={{ bgcolor: "blue" }}>{msg.userName[0]}</Avatar>
+        </ListItemAvatar>
+        <ListItemText 
+          primary={
+            <>
+              <Typography sx={{ display: "inline" }}>
+                {msg.userName}
+              </Typography>
+              <Typography sx={{ display: "inline", fontSize: "12px", marginLeft: 2 }}>
+                {formatDateFromTimestamp(msg.createdTime)}
+              </Typography>
+            </>
+          }
+          secondary={
+            <Typography>
+              {msg.message}
+            </Typography>
+          }
+        />
+      </ListItem>
+  )
+} 
 
 function Messages({socket}) {
     const [messagesRecieved, setMessagesReceived] = useState([]);
 
     useEffect(() => {
         socket.on('receive_message', (data) => {
-          console.log(data);
+
           setMessagesReceived((state) => [
             ...state,
             {
@@ -20,27 +60,12 @@ function Messages({socket}) {
         return () => socket.off('receive_message');
       }, [socket]);
 
-      function formatDateFromTimestamp(timestamp) {
-        console.log(timestamp)
-        const date = new Date(timestamp);
-        return date.toLocaleString();
-      }
-
     return (
-      <div>
-        {messagesRecieved.map((msg, i) => (
-        <div key={i}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span >{msg.userName}</span>
-            <span >
-              {formatDateFromTimestamp(msg.createdTime)}
-            </span>
-          </div>
-          <p>{msg.message}</p>
-          <br />
-        </div>
+      <>
+        {messagesRecieved.map((msg) => (
+          <Message msg={msg} key={msg.createdTime + msg.message}/>
       ))}
-      </div>
+      </>
     
   )
 }
