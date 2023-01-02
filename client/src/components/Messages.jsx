@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+import { ListItem } from '@mui/material';
+import { ListItemText } from "@mui/material"
+import { ListItemAvatar } from "@mui/material"
+
 import Avatar from '@mui/material/Avatar';
 
 // Kolla hur
 import Typography from '@mui/material/Typography';
-import { ListItem } from '@mui/material';
-import { ListItemText } from "@mui/material"
-import { ListItemAvatar } from "@mui/material"
 
 function formatDateFromTimestamp(timestamp) {
   return new Date(timestamp).toLocaleString();
