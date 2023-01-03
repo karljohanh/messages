@@ -77,7 +77,7 @@ const Login = () => {
             <TextField
               variant="outlined"
               id="outlined-basic"
-              label="password"
+              label="Password"
               type="password"
               name="password"
               onChange={handleChange}
