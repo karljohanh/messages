@@ -27,7 +27,6 @@ module.exports = () => {
     console.log(`User connected ${socket.id}`);
 
     // Write socket event listeners in here...
-
     socket.on('join_room', (data) => {
       const {userName, room} = data
       socket.join(room);
@@ -63,15 +62,14 @@ module.exports = () => {
       io.in(data.room).emit('receive_message', data);
     });
 
+
     socket.on('leave_room', (data) => {
       const { userName, room } = data;
       const createdTime = new Date()
-      updatedUserList = allUsers.filter((user) => user.id !== socket.id);
+      allUsers = allUsers.filter((user) => user.id !== socket.id);
       
-      socket.leave(room);
-
       // Skickar uppdaterad lista med alla användare
-      io.in(room).emit('chatroom_users', updatedUserList);
+      io.in(room).emit('chatroom_users', allUsers);
 
       // Skickar meddelande om att användaren lämnat
       socket.to(room).emit('receive_message', {
@@ -81,7 +79,7 @@ module.exports = () => {
       });
     });
 
-    socket.on('disconnect', (reason, user) => {
+    socket.on('disconnect', (reason) => {
       if (
         reason === 'io server disconnect' ||
         reason === 'client namespace disconnect'

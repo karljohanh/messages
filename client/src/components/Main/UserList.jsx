@@ -24,7 +24,6 @@ function User({ user }) {
 }
 
 function UserList({ allUsers }) {
-  console.log(allUsers)
   return (
     <>
       {allUsers.map((user) => {
