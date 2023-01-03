@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { io } from 'socket.io-client';
 import Stack from "@mui/material/Stack"
 
@@ -10,9 +10,6 @@ const server = 'http://localhost:5005/';
 const socket = io.connect(server);
 
 const Main = ({userName}) => {
-  console.log(userName)
-  // const [ userName, setUserName] = useState('Marcus');
-  // const [ user, setUser ] = ({userName:"Marcus"})
   const [ allUsers, setAllUsers ] = useState([])
   const [room, setRoom] = useState('');
 

@@ -4,21 +4,17 @@ import Signup from './components/Signup';
 import Login from './components/Login';
 import { useState } from 'react';
 
+import useToken from './hooks/useToken';
+
 function App() {
-  // const user = localStorage.getItem('token');
-  const [user, setUSer] = useState(localStorage.getItem('token'))
   const [ userName, setUserName ] = useState("")
-  
-  function updateStorage(data) {
-    localStorage.setItem('token', data)
-    setUSer({"token": data})
-  }
+  const { token, setToken } = useToken()
 
   return (
     <Routes>
-      {user && userName && <Route path="/" exact element={<Main userName={userName}/>} />}
+      {token && <Route path="/" exact element={<Main userName={userName}/>} />}
       <Route path="/signup" exact element={<Signup />} />
-      <Route path="/login" exact element={<Login setUserName={setUserName} updateStorage={updateStorage}/>} />
+      <Route path="/login" exact element={<Login setUserName={setUserName} setToken={setToken}/>} />
       <Route path="/" exact element={<Navigate replace to="/login" />} />
     </Routes>
   );

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -8,7 +8,7 @@ import { Box, Stack } from '@mui/system';
 import { Grid, TextField, Button, Typography } from '@mui/material';
 import logo from '../../assets/chatlogo.png';
 
-const Login = ({setUserName, updateStorage}) => {
+const Login = ({setUserName, setToken}) => {
   const [data, setData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
 
@@ -25,7 +25,7 @@ const Login = ({setUserName, updateStorage}) => {
       const url = 'http://localhost:4000/api/auth';
       const { data: res } = await axios.post(url, data);
       // localStorage.setItem('token', res.data)
-      updateStorage(res.data)
+      setToken(res.data)
       navigate("/")
     } catch (error) {
       if (
