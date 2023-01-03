@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
+import { List } from "@mui/material"
 import { ListItem } from '@mui/material';
 import { ListItemText } from "@mui/material"
 import { ListItemAvatar } from "@mui/material"
-
-import Avatar from '@mui/material/Avatar';
+import { Avatar } from '@mui/material';
 
 // Kolla hur
 import Typography from '@mui/material/Typography';
@@ -14,7 +14,7 @@ function formatDateFromTimestamp(timestamp) {
 
 function Message({msg}) {
   return (
-      <ListItem>
+      <ListItem alignItems='flex-start'>
         <ListItemAvatar >
           <Avatar sx={{ bgcolor: "blue" }}>{msg.userName[0]}</Avatar>
         </ListItemAvatar>
@@ -60,11 +60,11 @@ function Messages({socket}) {
       }, [socket]);
 
     return (
-      <>
+      <List sx={{flexGrow:"1", overflowY:"scroll"}}>
         {messagesRecieved.map((msg) => (
-          <Message msg={msg} key={msg.createdTime + msg.message}/>
+            <Message msg={msg} key={msg.createdTime + msg.message}/>
       ))}
-      </>
+      </List>
     
   )
 }

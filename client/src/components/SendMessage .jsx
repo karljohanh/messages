@@ -14,8 +14,6 @@ function SendMessage ({ socket, userName, room }) {
   }
     
   return (
-    <div>
-      <form >
       <TextField
         sx={{
           width: "100%",
@@ -33,8 +31,6 @@ function SendMessage ({ socket, userName, room }) {
         value={message}
         variant="outlined" 
       />
-      </form>
-    </div>
   )
 }
 

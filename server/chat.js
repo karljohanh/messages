@@ -6,6 +6,7 @@ require('dotenv').config();
 const cors = require('cors');
 
 const app = express();
+app.use(cors)
 const server = http.createServer(app);
 
 const port = process.env.PORT || 5005;
@@ -27,31 +28,32 @@ module.exports = () => {
 
     // Write socket event listeners in here...
 
-    // joining room
     socket.on('join_room', (data) => {
       const {userName, room} = data
       socket.join(room);
 
       let createdTime = Date.now()
 
-      // Send all users in room
+      // Skickar meddelande till alla användare i rummet
       socket.to(room).emit("receive_message", {
         message: `${userName} har gått med i rummet.`,
         userName: CHAT_BOT,
         createdTime
       })
 
-      // Send new user only
+      // Skickar välkommen till användaren
       socket.emit("receive_message", {
         message: `Välkommen ${userName}`,
         userName: CHAT_BOT,
         createdTime
       })
 
-      // Track users in room
+      // Håller reda på användare i rummet
       chatRoom = room;
       allUsers.push({id: socket.id, userName, room})
       chatRoomUsers = allUsers.filter((user) => user.room === room);
+
+      // Skickar lista med alla användare i rummet
       socket.to(room).emit('chatroom_users', chatRoomUsers);
       socket.emit('chatroom_users', chatRoomUsers);
     });
@@ -63,9 +65,20 @@ module.exports = () => {
 
     socket.on('leave_room', (data) => {
       const { userName, room } = data;
+      const createdTime = new Date()
+      updatedUserList = allUsers.filter((user) => user.id !== socket.id);
+      
       socket.leave(room);
-      allUsers = allUsers.filter((user) => user.id !== socket.id);
-      console.log(`User ${userName} left the room`);
+
+      // Skickar uppdaterad lista med alla användare
+      io.in(room).emit('chatroom_users', updatedUserList);
+
+      // Skickar meddelande om att användaren lämnat
+      socket.to(room).emit('receive_message', {
+        message: `${userName} lämnade rummet`,
+        userName: CHAT_BOT,
+        createdTime: createdTime
+      });
     });
 
     socket.on('disconnect', (reason, user) => {

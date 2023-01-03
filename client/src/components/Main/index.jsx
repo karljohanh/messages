@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { io } from 'socket.io-client';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import Stack from "@mui/material/Stack"
 
 import Chat from '../Chat';
+import UserList from '../UserList';
 
 const server = 'http://localhost:5005/';
 const socket = io.connect(server);
@@ -35,33 +35,41 @@ const Main = () => {
   });
 
   socket.on("chatroom_users", (users) => {
-    console.log("all users: ", allUsers)
+    console.log("updating users list: ", users)
     setAllUsers(users)
   })
 
-  function User({name}) {
-    return (
-      <p>{name}</p>
-    )
-  }
-
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container>
-        <Grid item sm={3}>
-          <p onClick={joinRoom}>JavaScript</p>
-        </Grid>
-        <Grid item sm={6}>
-          {room && <Chat socket={socket} userName={userName} room={room}/>}
-        </Grid>
-        <Grid item sm={3}>
-          {allUsers && allUsers.map((user) => {
-            return <User key={user.id} name={user.userName} />
-          })}
-        </Grid>
+    // <Box >
+    //   <Grid container>
+    //     <Grid item sm={3}>
+    //       <p onClick={joinRoom}>JavaScript</p>
+    //     </Grid>
+    //     <Grid item sm={6}>
+    //       {room && <Chat socket={socket} userName={userName} room={room}/>}
+    //     </Grid>
+    //     <Grid item sm={3}>
+    //       {/* {allUsers && allUsers.map((user) => {
+    //         return <User key={user.id} name={user.userName} />
+    //       })} */}
+    //       <UserList allUsers={allUsers}/>
+    //     </Grid>
+    //     <button onClick={handleLogout}>Log Out</button>
+    //   </Grid>
+    // </Box>
+    <Stack direction="row">
+      <Stack flex="1">
+        <p onClick={joinRoom}>JavaScript</p>
         <button onClick={handleLogout}>Log Out</button>
-      </Grid>
-    </Box>
+        <button onClick={leaveRoom}>Leave room</button>
+      </Stack>
+      <Stack sx={{height:"100vh"}} flex="3" >
+        {room && <Chat socket={socket} userName={userName} room={room}/>}
+      </Stack>
+      <Stack flex="1">
+        {room && <UserList allUsers={allUsers}/>}
+      </Stack>
+    </Stack>
   );
 };
 
