@@ -40,23 +40,6 @@ const Main = () => {
   })
 
   return (
-    // <Box >
-    //   <Grid container>
-    //     <Grid item sm={3}>
-    //       <p onClick={joinRoom}>JavaScript</p>
-    //     </Grid>
-    //     <Grid item sm={6}>
-    //       {room && <Chat socket={socket} userName={userName} room={room}/>}
-    //     </Grid>
-    //     <Grid item sm={3}>
-    //       {/* {allUsers && allUsers.map((user) => {
-    //         return <User key={user.id} name={user.userName} />
-    //       })} */}
-    //       <UserList allUsers={allUsers}/>
-    //     </Grid>
-    //     <button onClick={handleLogout}>Log Out</button>
-    //   </Grid>
-    // </Box>
     <Stack direction="row">
       <Stack flex="1">
         <p onClick={joinRoom}>JavaScript</p>
