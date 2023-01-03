@@ -1,6 +1,15 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
+import { Box } from '@mui/system';
+import {
+  Typography,
+  CssBaseline,
+  Button,
+  Grid,
+  TextField,
+  Stack,
+} from '@mui/material';
 
 const Signup = () => {
   const [data, setData] = useState({
@@ -35,55 +44,92 @@ const Signup = () => {
   };
 
   return (
-    <div>
-      <div>
-        <div>
-          <h1>Welcome!</h1>
-          <Link to="/login">
-            <button type="button">Sign In</button>
-          </Link>
-        </div>
-        <div>
-          <form onSubmit={handleSubmit}>
-            <h1>Create Account</h1>
-            <input
+    <>
+      <CssBaseline />
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          margin: '1rem 1rem 0rem 1rem',
+        }}
+      >
+        <Typography variant="h1" sx={{ fontSize: '2rem' }}>
+          messages
+        </Typography>
+        <Link to="/login">
+          <Button variant="outlined" type="button">
+            Log in
+          </Button>
+        </Link>
+      </Box>
+
+      <Grid
+        container
+        spacing={0}
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
+        style={{ marginTop: '10rem', maxHeight: '90vh' }}
+      >
+        <Typography variant="h3">Create Account</Typography>
+        <Box component="form" autoComplete="off" onSubmit={handleSubmit}>
+          <Stack
+            spacing={2}
+            direction="column"
+            sx={{ width: '20rem', marginTop: '2rem' }}
+          >
+            <TextField
+              variant="outlined"
+              id="outlined-basic"
               type="text"
-              placeholder="First Name"
+              label="First Name"
               name="firstName"
               value={data.firstName}
               onChange={handleChange}
               required
             />
-            <input
-              type="text"
-              placeholder="Last Name"
+            <TextField
+              variant="outlined"
+              id="outlined-basic"
+              label="Last Name"
               name="lastName"
               value={data.lastName}
               onChange={handleChange}
               required
             />
-            <input
+            <TextField
+              variant="outlined"
+              id="outlined-basic"
+              label="Email"
               type="email"
-              placeholder="Email"
               name="email"
               value={data.email}
               onChange={handleChange}
               required
             />
-            <input
+            <TextField
+              variant="outlined"
+              id="outlined-basic"
+              label="Password"
               type="password"
-              placeholder="Password"
               name="password"
               value={data.password}
               onChange={handleChange}
               required
             />
-            {error && <div>{error}</div>}
-            <button type="submit">Sign Up</button>
-          </form>
-        </div>
-      </div>
-    </div>
+
+            <Button variant="contained" type="submit">
+              Sign Up
+            </Button>
+          </Stack>
+          {error && (
+            <Stack alignItems="center">
+              <p>{error}</p>
+            </Stack>
+          )}
+        </Box>
+      </Grid>
+    </>
   );
 };
 
