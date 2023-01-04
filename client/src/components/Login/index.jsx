@@ -71,7 +71,7 @@ const Login = ({setUserName, setToken}) => {
             <TextField
               variant="outlined"
               id="outlined-basic"
-              label="Email"
+              label="email"
               type="email"
               name="email"
               onChange={handleChange}
