@@ -14,6 +14,24 @@ const port = process.env.PORT || 5005;
 const CHAT_BOT = "ChatBot"
 let chatRoom = ""
 let allUsers = []
+const chatRooms = [
+  {
+    roomName: "Native JavaScript",
+    users: [],
+  },
+  {
+    roomName: "React",
+    users: [],
+  },
+  {
+    roomName: "VueS",
+    users: [],
+  },
+  {
+    roomName: "Angular",
+    users: [],
+  }
+]
 
 module.exports = () => {
   const io = new Server(server, {
@@ -27,6 +45,8 @@ module.exports = () => {
     console.log(`User connected ${socket.id}`);
 
     // Write socket event listeners in here...
+    socket.emit("list_chatRooms", chatRooms.map((chatRoomObj) => chatRoomObj.roomName))
+
     socket.on('join_room', (data) => {
       const {userName, room} = data
       socket.join(room);

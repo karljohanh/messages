@@ -8,7 +8,7 @@ const userRoutes = require('./routes/users.js');
 const authRoutes = require('./routes/auth.js');
 
 /* LOGIN */
-connection(); //anslut till db
+// connection(); //anslut till db
 chat();
 
 //middlewares
