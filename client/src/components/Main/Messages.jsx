@@ -4,9 +4,8 @@ import { ListItem } from '@mui/material';
 import { ListItemText } from "@mui/material"
 import { ListItemAvatar } from "@mui/material"
 import { Avatar } from '@mui/material';
+import { Typography } from '@mui/material';
 
-// Kolla hur
-import Typography from '@mui/material/Typography';
 
 function formatDateFromTimestamp(timestamp) {
   return new Date(timestamp).toLocaleString();
@@ -39,8 +38,8 @@ function Message({msg}) {
   )
 } 
 
-function Messages({socket}) {
-    const [messagesRecieved, setMessagesReceived] = useState([]);
+function Messages({socket, currentRoom}) {
+    const [ messagesRecieved, setMessagesReceived ] = useState([]);
 
     useEffect(() => {
         socket.on('receive_message', (data) => {
@@ -55,9 +54,10 @@ function Messages({socket}) {
           ]);
         });
     
+
         // Remove event listener on component unmount
         return () => socket.off('receive_message');
-      }, [socket]);
+      }, [socket]);      
 
     return (
       <List sx={{flexGrow:"1", overflowY:"scroll"}}>
