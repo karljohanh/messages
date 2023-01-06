@@ -5,9 +5,6 @@ const mongoose = require('mongoose');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
 const chat = require('./chat');
-// const connection = require('./db');
-// const userRoutes = require('./routes/users.js');
-// const authRoutes = require('./routes/auth.js');
 
 const loginRouter = require('./routes/loginRoutes');
 
@@ -20,9 +17,6 @@ const corsOptions = {
   optionsSuccessStatus: 200,
 };
 
-app.use(cors(corsOptions));
-app.use(express.json());
-
 //Initial connection to db
 mongoose.set('strictQuery', false);
 mongoose.Promise = global.Promise;
@@ -30,7 +24,7 @@ mongoose.connect(process.env.MONGODB, {
   useNewUrlParser: true,
 });
 
-//connect-mongodb-session store
+// setting up connect-mongodb-session store
 const mongoDBstore = new MongoDBStore({
   uri: process.env.MONGODB,
   collection: 'mySessions',
@@ -39,17 +33,20 @@ const mongoDBstore = new MongoDBStore({
 app.use(
   session({
     secret: 'a1s2d3f4g5h6',
-    name: 'session-id', // name of cookie
+    name: 'session-id', // cookies name to be put in "key" field in postman
     store: mongoDBstore,
     cookie: {
-      maxAge: MAX_AGE, // when the cookie will expire
+      maxAge: MAX_AGE, // this is when our cookies will expired and the session will not be valid anymore (user will be log out)
       sameSite: false,
-      secure: false, // turn on for production
+      secure: false, // to turn on just in production
     },
     resave: true,
     saveUninitialized: false,
   })
 );
+
+app.use(cors(corsOptions));
+app.use(express.json());
 
 //ROUTERS
 app.use('/api', loginRouter);
@@ -60,14 +57,3 @@ app.listen(port, () => {
 });
 
 chat();
-
-/* LOGIN */
-// connection(); //anslut till db
-
-// //middlewares
-// app.use(express.json());
-// app.use(cors());
-
-// //routes
-// app.use('/api/users', userRoutes);
-// app.use('/api/auth', authRoutes);

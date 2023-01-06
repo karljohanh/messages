@@ -25,7 +25,7 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
-import theme from '../styles/theme';
+import theme from '../../styles/theme';
 
 function Signup() {
   const [values, setValues] = useState({
@@ -48,7 +48,7 @@ function Signup() {
     //eslint-disable-next-line
     switch (fieldName) {
       case 'username':
-        validator.isUsername(currValue)
+        validator.isAlphanumeric(currValue)
           ? setErrors({ ...errors, username: false })
           : setErrors({ ...errors, username: true });
         break;
@@ -128,7 +128,7 @@ function Signup() {
 
   return (
     <>
-      <Container sx={{ marginTop: 'calc(100vh - 45%)' }} maxWidth="sm">
+      <Container sx={{ marginTop: 'calc(100vh - 50%)' }} maxWidth="sm">
         <Paper elevation={6}>
           <Container
             maxWidth="sm"
@@ -166,9 +166,7 @@ function Signup() {
               value={values.username}
               onChange={handleChange('username')}
               error={errors.username}
-              helperText={
-                errors.username && 'Please insert a valid username address'
-              }
+              helperText={errors.username && 'Please insert a valid username.'}
             />
 
             <FormControl variant="filled">
@@ -193,8 +191,7 @@ function Signup() {
               />
 
               <FormHelperText error={errors.password}>
-                Password must be at least 8 characters, have one symbol, 1
-                uppercase letter, 1 lowercase and 1 digit
+                Password must be at least 8 characters.
               </FormHelperText>
             </FormControl>
 

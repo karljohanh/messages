@@ -11,7 +11,17 @@ function RoutesComp() {
   return (
     <>
       <Routes>
-        {userContext.username && <Route path="/" element={<Main />} />}
+        {userContext.username && (
+          <Route
+            path="/"
+            element={
+              <>
+                Welcome {userContext.username}
+                <Main></Main>
+              </>
+            }
+          />
+        )}
         {!userContext.username && (
           <>
             <Route path="/" element={<Login />} />

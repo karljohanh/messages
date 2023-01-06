@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-// import validator from 'validator';
-// import { regexPassword } from '../../utils';
+import validator from 'validator';
+import { regexPassword } from '../../utils';
 
 import {
   Paper,
@@ -26,7 +26,7 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
-import theme from '../styles/theme';
+import theme from '../../styles/theme';
 
 // eslint-disable-next-line
 function Login({}) {
@@ -43,15 +43,15 @@ function Login({}) {
   });
 
   const handleChange = (fieldName) => (event) => {
-    // const currValue = event.target.value;
-    // let isCorrectValue =
-    //   fieldName === 'username'
-    //     ? validator.isAlphanumeric(currValue)
-    //     : regexPassword.test(currValue);
+    const currValue = event.target.value;
+    let isCorrectValue =
+      fieldName === 'username'
+        ? validator.isAlphanumeric(currValue)
+        : regexPassword.test(currValue);
 
-    // isCorrectValue
-    //   ? setErrors({ ...errors, [fieldName]: false })
-    //   : setErrors({ ...errors, [fieldName]: true });
+    isCorrectValue
+      ? setErrors({ ...errors, [fieldName]: false })
+      : setErrors({ ...errors, [fieldName]: true });
 
     setValues({ ...values, [fieldName]: event.target.value });
   };
@@ -67,7 +67,7 @@ function Login({}) {
     event.preventDefault();
 
     try {
-      const res = await fetch('http://localhost:5001/api/login', {
+      const res = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ function Login({}) {
 
   return (
     <>
-      <Container sx={{ marginTop: 'calc(100vh - 40%)' }} maxWidth="xs">
+      <Container sx={{ marginTop: 'calc(100vh - 50%)' }} maxWidth="xs">
         <Paper elevation={6}>
           <Container
             maxWidth="sm"

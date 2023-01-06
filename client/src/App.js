@@ -1,6 +1,8 @@
-import { Routes } from 'react-router-dom';
 import { useState, useEffect, createContext } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './styles/theme';
+import Routes from './Routes';
 
 export const UserContext = createContext({});
 
@@ -12,7 +14,7 @@ function App() {
     const fetchUserAuth = async () => {
       try {
         setLoading(true);
-        const res = await fetch('http://loclahost:5001/api/isAuth');
+        const res = await fetch('/api/isAuth');
         if (!res.ok) return setLoading(false);
 
         setUserSession(await res.json());
@@ -20,6 +22,7 @@ function App() {
       } catch (error) {
         setLoading(false);
         console.error('There was an error fetch auth', error);
+        console.log('There was an error fetch auth');
         return;
       }
     };
@@ -28,8 +31,10 @@ function App() {
 
   return (
     <UserContext.Provider value={userSession}>
-      <CssBaseline />
-      {loading ? <>loading...</> : <Routes />}
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {loading ? <>loading...</> : <Routes />}
+      </ThemeProvider>
     </UserContext.Provider>
   );
 }
