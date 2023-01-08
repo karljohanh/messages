@@ -48,38 +48,15 @@ module.exports = () => {
     socket.emit("list_chatRooms", chatRooms.map((chatRoomObj) => chatRoomObj.roomName))
 
     socket.on('join_room', (data) => {
-      // const { userName, room } = data
-      // let createdTime = Date.now()
-      // Går med i alla rum direkt
+
       chatRooms.forEach((room) => {
-        console.log("joining room: ", room.roomName)
         socket.join(room.roomName)
       })
 
-      
-
-      // Skickar meddelande till alla användare i rummet
-      // socket.to(room).emit("receive_message", {
-      //   message: `${userName} har gått med i rummet.`,
-      //   userName: CHAT_BOT,
-      //   createdTime
-      // })
-
-
-
-      // Håller reda på användare i rummet
-      // chatRoom = room;
-      // allUsers.push({id: socket.id, userName, room})
-      // chatRoomUsers = allUsers.filter((user) => user.room === room);
-
-      // Skickar lista med alla användare i rummet
-      // socket.to(room).emit('chatroom_users', chatRoomUsers);
-      // socket.emit('chatroom_users', chatRoomUsers);
     });
 
     // Sending messages
     socket.on('send_message', (data) => {
-      console.log("sendmessages data: ", data)
       io.in(data.room).emit('receive_message', data);
     });
 
