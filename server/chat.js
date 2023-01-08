@@ -48,37 +48,37 @@ module.exports = () => {
     socket.emit("list_chatRooms", chatRooms.map((chatRoomObj) => chatRoomObj.roomName))
 
     socket.on('join_room', (data) => {
-      const {userName, room} = data
-      socket.join(room);
+      // const { userName, room } = data
+      // let createdTime = Date.now()
+      // Går med i alla rum direkt
+      chatRooms.forEach((room) => {
+        socket.join(room.roomName)
+      })
 
-      let createdTime = Date.now()
+      
 
       // Skickar meddelande till alla användare i rummet
-      socket.to(room).emit("receive_message", {
-        message: `${userName} har gått med i rummet.`,
-        userName: CHAT_BOT,
-        createdTime
-      })
+      // socket.to(room).emit("receive_message", {
+      //   message: `${userName} har gått med i rummet.`,
+      //   userName: CHAT_BOT,
+      //   createdTime
+      // })
 
-      // Skickar välkommen till användaren
-      socket.emit("receive_message", {
-        message: `Välkommen ${userName}`,
-        userName: CHAT_BOT,
-        createdTime
-      })
+
 
       // Håller reda på användare i rummet
-      chatRoom = room;
-      allUsers.push({id: socket.id, userName, room})
-      chatRoomUsers = allUsers.filter((user) => user.room === room);
+      // chatRoom = room;
+      // allUsers.push({id: socket.id, userName, room})
+      // chatRoomUsers = allUsers.filter((user) => user.room === room);
 
       // Skickar lista med alla användare i rummet
-      socket.to(room).emit('chatroom_users', chatRoomUsers);
-      socket.emit('chatroom_users', chatRoomUsers);
+      // socket.to(room).emit('chatroom_users', chatRoomUsers);
+      // socket.emit('chatroom_users', chatRoomUsers);
     });
 
     // Sending messages
     socket.on('send_message', (data) => {
+      console.log("sendmessages data: ", data)
       io.in(data.room).emit('receive_message', data);
     });
 
