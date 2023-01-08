@@ -52,6 +52,7 @@ module.exports = () => {
       // let createdTime = Date.now()
       // Går med i alla rum direkt
       chatRooms.forEach((room) => {
+        console.log("joining room: ", room.roomName)
         socket.join(room.roomName)
       })
 

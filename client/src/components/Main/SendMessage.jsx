@@ -1,37 +1,35 @@
-import { useState} from 'react'
-import TextField from '@mui/material/TextField';
+import { useState } from "react"
+import { TextField } from '@mui/material';
 
+const SendMessage = ({userName, room, socket}) => {
+const [ message, setMessage ] = useState("")
 
-function SendMessage ({ socket, userName, room }) {
-  const [message, setMessage] = useState('');
-
-  function send(e) {
+function send(e) {
     if (message) {
-      const createdTime = Date.now()
-      socket.emit('send_message', { userName, room, message, createdTime });
-      setMessage('');
+    const createdTime = Date.now()
+    socket.emit('send_message', { userName, room, message, createdTime });
+    setMessage('');
     }
-  }
+}
     
-  return (
-      <TextField
+    return (
+    <TextField
         sx={{
-          width: "100%",
+        width: "100%",
         }}
         id="outlined-basic" 
         multiline 
         onChange={(e) => {setMessage(e.target.value)}}
         onKeyPress={(e) => {
-          if (e.key === 'Enter') {
+        if (e.key === 'Enter') {
             e.preventDefault();
             send()
-          }
+        }
         }}
         placeholder={`Skicka meddelande till #${room}`}
         value={message}
         variant="outlined" 
-      />
-  )
+    />
+    )
 }
-
-export default SendMessage 
+export default SendMessage

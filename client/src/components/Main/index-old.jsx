@@ -1,68 +1,90 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import Stack from "@mui/material/Stack"
+import { List, Stack, TextField } from '@mui/material';
 
-import Messages from './Messages';
-import SendMessage from "./SendMessage"
-import UserList from './UserList';
-import { Typography } from '@mui/material';
-import { useEffect } from 'react';
+import Message from "./Message"
+import useSocket from "./useSocket"
 
-const server = 'http://localhost:5005/';
-const socket = io.connect(server);
 
-const Main = ({userName}) => {
-  const [ allUsers, setAllUsers ] = useState([])
-  const [ allRooms, setAllRooms ] = useState([])
-  const [ room, setRoom ] = useState('');
-  const [ messageLog, setMessageLog ] = useState([])
+// const socket = io("http://localhost:5005/").connect();
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    window.location.reload();
-  };
+const MessageList = ({messages}) => {
+    console.log("messages: ", messages)
+    return (
+        <List sx={{flexGrow:"1", overflowY:"scroll"}}>
+            {messages.map((message, i) => {
+                return (
+                    <Message msg={message} key={message.createdTime + message.message + i}/>
+                )
+            })}
+        </List>
+    )
+}
 
-  function joinRoom(e) {
-    if (room) {
-      socket.emit('leave_room', { userName, room });
-      setRoom("")
-    }
-    setRoom(e.target.textContent)
-    socket.emit('join_room', { userName, room: e.target.textContent });
-  }
+const SendMessage = ({room, sendMessage}) => {
+    const [ message, setMessage ] = useState("")
 
-  socket.on('connection', () => {
-    console.log(`I'm connected with the back-end`);
-  });
+    function send(e) {
+        if (message) {
+        //   const createdTime = Date.now()
+        //   socket.emit('send_message', { userName, room, message, createdTime });
+            sendMessage(message)
+          setMessage('');
+        }
+      }
+        
+      return (
+          <TextField
+            sx={{
+              width: "100%",
+            }}
+            id="outlined-basic" 
+            multiline 
+            onChange={(e) => {setMessage(e.target.value)}}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                send()
+              }
+            }}
+            placeholder={`Skicka meddelande till #${room}`}
+            value={message}
+            variant="outlined" 
+          />
+      )
+}
 
-  socket.on("list_chatRooms", (data) => {
-    setAllRooms(data)
+const Main = () => {
+    const [rooms, notifications, setNotifications, sendMessage, currentRoom, setCurrentRoom] = useSocket();
 
-    const newL = data.map((room) =>  {
-      return { room, messages: []}
-    })
-    setMessageLog(newL)
-  })
+    console.log("i main rooms[currentRoom]: ", rooms[currentRoom])
 
-  socket.on("chatroom_users", (users) => {
-    setAllUsers(users)
-  })
-  
+    const handleChangeRoom = room => {
+        setCurrentRoom(room);
+        setNotifications(notifications => {
+          const newNotifications = { ...notifications };
+          delete newNotifications[room];
+          return newNotifications;
+        });
+      };
+
   return (
     <Stack direction="row">
       <Stack flex="1">
-        {allRooms.map((room) => {
-          return <Typography onClick={joinRoom}>{room}</Typography>
+        {Object.keys(rooms).map((room) => {
+            return (
+                <>
+                <button onClick={() => handleChangeRoom(room)}>{room}</button>
+                <p>{notifications[room] || ""}</p>
+                </>
+            )
         })}
-        <button onClick={handleLogout}>Log Out</button>
-        {/* <button onClick={leaveRoom}>Leave room</button> */}
       </Stack>
       <Stack sx={{height:"100vh"}} flex="3" >
-        <Messages socket={socket} messageLog={messageLog} setMessageLog={setMessageLog} currentRoom={room} />
-        <SendMessage socket={socket} userName={userName} room={room} />
+        <MessageList messages={rooms[currentRoom] || []} />
+        <SendMessage room={currentRoom} sendMessage={sendMessage}/>
       </Stack>
       <Stack flex="1">
-        {room && <UserList allUsers={allUsers}/>}
       </Stack>
     </Stack>
   );
