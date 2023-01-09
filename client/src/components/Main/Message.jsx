@@ -4,15 +4,14 @@ import { ListItem } from '@mui/material';
 import { ListItemText } from "@mui/material"
 import { ListItemAvatar } from "@mui/material"
 import { Avatar } from '@mui/material';
+import { Typography } from '@mui/material';
 
-// Kolla hur
-import Typography from '@mui/material/Typography';
 
 function formatDateFromTimestamp(timestamp) {
   return new Date(timestamp).toLocaleString();
 }
 
-function Message({msg}) {
+export default function Message({msg}) {
   return (
       <ListItem alignItems='flex-start'>
         <ListItemAvatar >
@@ -38,35 +37,3 @@ function Message({msg}) {
       </ListItem>
   )
 } 
-
-function Messages({socket}) {
-    const [messagesRecieved, setMessagesReceived] = useState([]);
-
-    useEffect(() => {
-        socket.on('receive_message', (data) => {
-
-          setMessagesReceived((state) => [
-            ...state,
-            {
-              message: data.message,
-              userName: data.userName,
-              createdTime: data.createdTime,
-            },
-          ]);
-        });
-    
-        // Remove event listener on component unmount
-        return () => socket.off('receive_message');
-      }, [socket]);
-
-    return (
-      <List sx={{flexGrow:"1", overflowY:"scroll"}}>
-        {messagesRecieved.map((msg) => (
-            <Message msg={msg} key={msg.createdTime + msg.message}/>
-      ))}
-      </List>
-    
-  )
-}
-
-export default Messages

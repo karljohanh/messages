@@ -1,54 +1,84 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom"
 import { io } from 'socket.io-client';
-import Stack from "@mui/material/Stack"
+import { Stack } from '@mui/material';
 
-import Messages from './Messages';
+import MessageList from "./MessageList"
 import SendMessage from "./SendMessage"
-import UserList from './UserList';
+import Rooms from "./Rooms"
 
-const server = 'http://localhost:5005/';
-const socket = io.connect(server);
+const Main = () => {
+    const socket = io("http://localhost:5005/").connect();
+    const [rooms, setRooms] = useState({});
+    const [notifications, setNotifications] = useState({});
+    const [currentRoom, setCurrentRoom] = useState("");
 
-const Main = ({userName}) => {
-  const [ allUsers, setAllUsers ] = useState([])
-  const [room, setRoom] = useState('');
+    const navigate = useNavigate()
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    window.location.reload();
-  };
-
-  function joinRoom(e) {
-    if (room) {
-      socket.emit('leave_room', { userName, room });
-      setRoom("")
+    function handleChangeRoom(room) {
+      setCurrentRoom(room);
+      setNotifications(notifications => ({
+        ...notifications,
+        [room]: 0
+      }));
     }
-    setRoom(e.target.textContent)
-    socket.emit('join_room', { userName, room: e.target.textContent });
-  }
 
-  socket.on('connection', () => {
-    console.log(`I'm connected with the back-end`);
-  });
+  const handleLogout = async (event) => {
+    event.preventDefault();
 
-  socket.on("chatroom_users", (users) => {
-    console.log("updating users list: ", users)
-    setAllUsers(users)
-  })
+    await fetch('/api/logout', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    navigate(0)
+  };
+    
+    // Just nu går man med i alla rum här
+    useEffect(() => {
+      console.log("kör")
+      socket.emit("join_room")
+      socket.on("list_chatRooms", (allRooms) => {
+        console.log(allRooms)
+        let tempRooms = {}
+        allRooms.forEach(room => {
+            tempRooms[room] = []
+        });
+        setRooms(tempRooms)
+      })
+    }, [])
+    
+    useEffect(() => {
+      socket.on('receive_message', ({ room, ...message }) => {
+          console.log("receive_message: ", message)
+        setRooms(rooms => {
+          const messages = [...(rooms[room] || []), message];
+          return { ...rooms, [room]: messages };
+        });
+        if (room !== currentRoom) {
+          setNotifications(notifications => ({
+            ...notifications,
+            [room]: (notifications[room] || 0) + 1
+          }));
+        }
+      });
+      
+      return () => {
+        socket.off('receive_message');
+      };
+    }, [currentRoom]);
 
   return (
-    <Stack direction="row">
+    <Stack direction="row" style={{height: "100vh"}}>
       <Stack flex="1">
-        <p onClick={joinRoom}>JavaScript</p>
-        <button onClick={handleLogout}>Log Out</button>
-        {/* <button onClick={leaveRoom}>Leave room</button> */}
+        <Rooms rooms={rooms} handleChangeRoom={handleChangeRoom} notifications={notifications} handleLogout={handleLogout}/>
       </Stack>
-      <Stack sx={{height:"100vh"}} flex="3" >
-        <Messages socket={socket}/>
-        <SendMessage socket={socket} userName={userName} room={room} />
+      <Stack flex="3" sx={{height: "95%"}}>
+        <MessageList messages={rooms[currentRoom] || []} />
+        <SendMessage room={currentRoom} socket={socket}/>
       </Stack>
       <Stack flex="1">
-        {room && <UserList allUsers={allUsers}/>}
       </Stack>
     </Stack>
   );

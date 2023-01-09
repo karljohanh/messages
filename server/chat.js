@@ -14,6 +14,24 @@ const port = process.env.PORT || 5005;
 const CHAT_BOT = "ChatBot"
 let chatRoom = ""
 let allUsers = []
+const chatRooms = [
+  {
+    roomName: "Native JavaScript",
+    users: [],
+  },
+  {
+    roomName: "React",
+    users: [],
+  },
+  {
+    roomName: "VueS",
+    users: [],
+  },
+  {
+    roomName: "Angular",
+    users: [],
+  }
+]
 
 module.exports = () => {
   const io = new Server(server, {
@@ -28,40 +46,16 @@ module.exports = () => {
 
     // Write socket event listeners in here...
     socket.on('join_room', (data) => {
-      const {userName, room} = data
-      socket.join(room);
-
-      let createdTime = Date.now()
-
-      // Skickar meddelande till alla användare i rummet
-      socket.to(room).emit("receive_message", {
-        message: `${userName} har gått med i rummet.`,
-        userName: CHAT_BOT,
-        createdTime
+      socket.emit("list_chatRooms", chatRooms.map((chatRoomObj) => chatRoomObj.roomName))
+      chatRooms.forEach((room) => {
+        socket.join(room.roomName)
       })
-
-      // Skickar välkommen till användaren
-      socket.emit("receive_message", {
-        message: `Välkommen ${userName}`,
-        userName: CHAT_BOT,
-        createdTime
-      })
-
-      // Håller reda på användare i rummet
-      chatRoom = room;
-      allUsers.push({id: socket.id, userName, room})
-      chatRoomUsers = allUsers.filter((user) => user.room === room);
-
-      // Skickar lista med alla användare i rummet
-      socket.to(room).emit('chatroom_users', chatRoomUsers);
-      socket.emit('chatroom_users', chatRoomUsers);
     });
 
     // Sending messages
     socket.on('send_message', (data) => {
       io.in(data.room).emit('receive_message', data);
     });
-
 
     socket.on('leave_room', (data) => {
       const { userName, room } = data;
@@ -86,6 +80,7 @@ module.exports = () => {
       ) {
         console.log('User disconnected');
       }
+      console.log("disconnect: ", socket.id)
     });
   });
 

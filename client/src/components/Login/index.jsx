@@ -1,106 +1,216 @@
-import axios from 'axios';
-import { useState } from 'react';
-import { Link, useNavigate, Navigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import validator from 'validator';
+import { regexPassword } from '../../utils';
 
-import * as React from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Stack } from '@mui/system';
-import { Grid, TextField, Button, Typography } from '@mui/material';
-import logo from '../../assets/chatlogo.png';
+import {
+  Paper,
+  Container,
+  Link,
+  Stack,
+  Button,
+  Box,
+  Divider,
+  Avatar,
+  Typography,
+  TextField,
+  FilledInput,
+  InputAdornment,
+  IconButton,
+  InputLabel,
+  FormControl,
+  FormHelperText,
+} from '@mui/material';
+import {
+  Face as FaceIcon,
+  Visibility,
+  VisibilityOff,
+} from '@mui/icons-material';
+import theme from '../../styles/theme';
 
-const Login = ({setUserName, setToken}) => {
-  const [data, setData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+// eslint-disable-next-line
+function Login({}) {
+  const [values, setValues] = useState({
+    username: '',
+    password: '',
+    showPassword: false,
+  });
+  const [errors, setErrors] = useState({
+    username: false,
+    password: false,
+    fetchError: false,
+    fetchErrorMsg: '',
+  });
+  const navigate = useNavigate()
 
-  const navigate = useNavigate();
+  const handleChange = (fieldName) => (event) => {
+    const currValue = event.target.value;
+    let isCorrectValue =
+      fieldName === 'username'
+        ? validator.isAlphanumeric(currValue)
+        : regexPassword.test(currValue);
 
-  const handleChange = ({ currentTarget: input }) => {
-    setUserName(data.email)
-    setData({ ...data, [input.name]: input.value });
+    isCorrectValue
+      ? setErrors({ ...errors, [fieldName]: false })
+      : setErrors({ ...errors, [fieldName]: true });
+
+    setValues({ ...values, [fieldName]: event.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleShowPassword = () => {
+    setValues({
+      ...values,
+      showPassword: !values.showPassword,
+    });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
     try {
-      const url = 'http://localhost:4000/api/auth';
-      const { data: res } = await axios.post(url, data);
-      // localStorage.setItem('token', res.data)
-      setToken(res.data)
-      navigate("/")
-    } catch (error) {
-      if (
-        error.response &&
-        error.response.status >= 400 &&
-        error.response.status <= 500
-      ) {
-        setError(error.response.data.message);
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: values.username,
+          password: values.password,
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        return setErrors({
+          ...errors,
+          fetchError: true,
+          fetchErrorMsg: error.msg,
+        });
       }
+
+      const data = await res.json();
+      console.log({ data });
+
+      // this is just a visual feedback for user for this demo
+      // this will not be an error, rather we will show a different UI or redirect user to dashboard
+      setErrors({
+        ...errors,
+        fetchError: true,
+        fetchErrorMsg: data.msg,
+      });
+      setValues({
+        username: '',
+        password: '',
+        showPassword: false,
+      });
+      navigate(0)
+      return;
+    } catch (error) {
+      setErrors({
+        ...errors,
+        fetchError: true,
+        fetchErrorMsg:
+          'There was a problem with our server, please try again later',
+      });
     }
   };
 
   return (
     <>
-      <CssBaseline />
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          margin: '1rem 1rem 0rem 1rem',
-        }}
-      >
-        <Typography variant="h1" sx={{ fontSize: '2rem' }}>
-          messages
-        </Typography>
-        <Link to="/signup">
-          <Button variant="outlined" type="button">
-            Sign Up
-          </Button>
-        </Link>
-      </Box>
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
-        style={{ minHeight: '75vh' }}
-      >
-        <Box component="form" autoComplete="off" onSubmit={handleSubmit}>
-          <img src={logo} alt="logo" />
-          <Stack spacing={2} direction="row">
+      <Container sx={{ marginTop: 'calc(100vh - 50%)' }} maxWidth="xs">
+        <Paper elevation={6}>
+          <Container
+            maxWidth="sm"
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingTop: '20px',
+            }}
+          >
+            <Avatar
+              sx={{
+                width: 80,
+                height: 80,
+                bgcolor: theme.palette.primary.main,
+                boxShadow: '0px 0px 8px rgba(131,153,167,0.99)',
+              }}
+            >
+              <FaceIcon sx={{ fontSize: 70 }} />
+            </Avatar>
+            <h2>Login</h2>
+          </Container>
+          <Stack
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            spacing={6}
+            sx={{ bgcolor: '#f5f5f6', padding: '40px' }}
+          >
             <TextField
-              variant="outlined"
-              id="outlined-basic"
-              label="email"
-              type="email"
-              name="email"
-              onChange={handleChange}
-              value={data.email}
-              required
+              variant="filled"
+              type="username"
+              label="Username"
+              value={values.username}
+              onChange={handleChange('username')}
+              error={errors.username}
             />
-            <TextField
-              variant="outlined"
-              id="outlined-basic"
-              label="Password"
-              type="password"
-              name="password"
-              onChange={handleChange}
-              value={data.password}
-              required
-            />
-            <Button variant="contained" type="submit">
-              Login
-            </Button>
+
+            <FormControl variant="filled">
+              <InputLabel htmlFor="password-field">Password</InputLabel>
+              <FilledInput
+                id="password-field"
+                type={values.showPassword ? 'text' : 'password'}
+                value={values.password}
+                onChange={handleChange('password')}
+                error={errors.password}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleShowPassword}
+                      edge="end"
+                    >
+                      {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Button
+                variant="contained"
+                size="large"
+                type="submit"
+                disabled={errors.username || errors.password}
+                sx={{
+                  minWidth: '70%',
+                }}
+              >
+                Login
+              </Button>
+            </Box>
+            {errors.fetchError && (
+              <FormHelperText error>{errors.fetchErrorMsg}</FormHelperText>
+            )}
+            <Divider />
+            <Typography paragraph align="center">
+              Don't have an account yet?{' '}
+              <Link component={RouterLink} to="/signup">
+                Sign up here
+              </Link>
+            </Typography>
           </Stack>
-          {error && (
-            <Stack alignItems="center">
-              <p>{error}</p>
-            </Stack>
-          )}
-        </Box>
-      </Grid>
+        </Paper>
+      </Container>
     </>
   );
-};
+}
 
 export default Login;
