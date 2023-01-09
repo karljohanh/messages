@@ -1,9 +1,10 @@
 import { useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import * as mui from "@mui/material"
+
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Main from './components/Main';
-
 import { UserContext } from './App';
 
 function RoutesComp() {
@@ -16,8 +17,8 @@ function RoutesComp() {
             path="/"
             element={
               <>
-                Welcome {userContext.username}
-                <Main></Main>
+                {/* Welcome {userContext.username} */}
+                <Main />
               </>
             }
           />

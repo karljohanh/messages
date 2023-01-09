@@ -1,46 +1,46 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom"
 import { io } from 'socket.io-client';
 import { Stack } from '@mui/material';
 
 import MessageList from "./MessageList"
 import SendMessage from "./SendMessage"
+import Rooms from "./Rooms"
 
-const socket = io("http://localhost:5005/").connect();
-
-const Main = ({userName = "Marcus"}) => {
+const Main = () => {
+    const socket = io("http://localhost:5005/").connect();
     const [rooms, setRooms] = useState({});
     const [notifications, setNotifications] = useState({});
     const [currentRoom, setCurrentRoom] = useState("");
 
+    const navigate = useNavigate()
+
     function handleChangeRoom(room) {
-        setCurrentRoom(room);
-        setNotifications(notifications => ({
-          ...notifications,
-          [room]: 0
-        }));
+      setCurrentRoom(room);
+      setNotifications(notifications => ({
+        ...notifications,
+        [room]: 0
+      }));
     }
 
   const handleLogout = async (event) => {
     event.preventDefault();
 
-    fetch('/api/logout', {
+    await fetch('/api/logout', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
     });
+    navigate(0)
   };
-
-  function joinRoom(e) {
-    if (room) {
-      socket.emit('leave_room', { userName, room });
-      setRoom('');
-    }
     
     // Just nu går man med i alla rum här
     useEffect(() => {
-      socket.emit("join_room", {userName, room: currentRoom})
+      console.log("kör")
+      socket.emit("join_room")
       socket.on("list_chatRooms", (allRooms) => {
+        console.log(allRooms)
         let tempRooms = {}
         allRooms.forEach(room => {
             tempRooms[room] = []
@@ -70,21 +70,13 @@ const Main = ({userName = "Marcus"}) => {
     }, [currentRoom]);
 
   return (
-    <Stack direction="row">
+    <Stack direction="row" style={{height: "100vh"}}>
       <Stack flex="1">
-        {Object.keys(rooms).map((room) => {
-            return (
-                <>
-                <button onClick={() => handleChangeRoom(room)}>{room}</button>
-                <p>{notifications[room] || ""}</p>
-                </>
-            )
-        })}
-        <button onClick={handleLogout}>Log Out</button>
+        <Rooms rooms={rooms} handleChangeRoom={handleChangeRoom} notifications={notifications} handleLogout={handleLogout}/>
       </Stack>
-      <Stack sx={{height:"100vh"}} flex="3" >
+      <Stack flex="3" sx={{height: "95%"}}>
         <MessageList messages={rooms[currentRoom] || []} />
-        <SendMessage userName={userName} room={currentRoom} socket={socket}/>
+        <SendMessage room={currentRoom} socket={socket}/>
       </Stack>
       <Stack flex="1">
       </Stack>

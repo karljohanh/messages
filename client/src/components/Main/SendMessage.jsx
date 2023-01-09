@@ -1,13 +1,16 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
 import { TextField } from '@mui/material';
+
+import { UserContext } from "../../App";
 
 const SendMessage = ({userName, room, socket}) => {
 const [ message, setMessage ] = useState("")
+const userContext = useContext(UserContext);
 
 function send(e) {
     if (message) {
     const createdTime = Date.now()
-    socket.emit('send_message', { userName, room, message, createdTime });
+    socket.emit('send_message', { userName: userContext.username, room, message, createdTime });
     setMessage('');
     }
 }
@@ -15,7 +18,7 @@ function send(e) {
     return (
     <TextField
         sx={{
-        width: "100%",
+        width: "100%"
         }}
         id="outlined-basic" 
         multiline 

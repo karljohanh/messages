@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import validator from 'validator';
 import { regexPassword } from '../../utils';
 
@@ -41,6 +41,7 @@ function Login({}) {
     fetchError: false,
     fetchErrorMsg: '',
   });
+  const navigate = useNavigate()
 
   const handleChange = (fieldName) => (event) => {
     const currValue = event.target.value;
@@ -102,6 +103,7 @@ function Login({}) {
         password: '',
         showPassword: false,
       });
+      navigate(0)
       return;
     } catch (error) {
       setErrors({

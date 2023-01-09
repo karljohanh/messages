@@ -45,21 +45,17 @@ module.exports = () => {
     console.log(`User connected ${socket.id}`);
 
     // Write socket event listeners in here...
-    socket.emit("list_chatRooms", chatRooms.map((chatRoomObj) => chatRoomObj.roomName))
-
     socket.on('join_room', (data) => {
-
+      socket.emit("list_chatRooms", chatRooms.map((chatRoomObj) => chatRoomObj.roomName))
       chatRooms.forEach((room) => {
         socket.join(room.roomName)
       })
-
     });
 
     // Sending messages
     socket.on('send_message', (data) => {
       io.in(data.room).emit('receive_message', data);
     });
-
 
     socket.on('leave_room', (data) => {
       const { userName, room } = data;
@@ -84,6 +80,7 @@ module.exports = () => {
       ) {
         console.log('User disconnected');
       }
+      console.log("disconnect: ", socket.id)
     });
   });
 
