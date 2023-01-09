@@ -1,22 +1,41 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
-import Main from './components/Main';
-import Signup from './components/Signup';
-import Login from './components/Login';
-import { useState } from 'react';
+import { useState, useEffect, createContext } from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './styles/theme';
+import Routes from './Routes';
 
-
+export const UserContext = createContext({});
 
 function App() {
-  const [ userName, setUserName ] = useState("Marcus")
-  const { token, setToken } = useToken()
+  const [loading, setLoading] = useState(true);
+  const [userSession, setUserSession] = useState(true);
+
+  useEffect(() => {
+    const fetchUserAuth = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/isAuth');
+        if (!res.ok) return setLoading(false);
+
+        setUserSession(await res.json());
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.error('There was an error fetch auth', error);
+        console.log('There was an error fetch auth');
+        return;
+      }
+    };
+    fetchUserAuth();
+  }, []);
 
   return (
-    <Routes>
-      {<Route path="/" exact element={<Main userName={userName}/>} />}
-      <Route path="/signup" exact element={<Signup />} />
-      <Route path="/login" exact element={<Login setUserName={setUserName} setToken={setToken}/>} />
-      <Route path="/" exact element={<Navigate replace to="/login" />} />
-    </Routes>
+    <UserContext.Provider value={userSession}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {loading ? <>loading...</> : <Routes />}
+      </ThemeProvider>
+    </UserContext.Provider>
   );
 }
 

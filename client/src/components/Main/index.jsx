@@ -19,6 +19,23 @@ const Main = ({userName = "Marcus"}) => {
           [room]: 0
         }));
     }
+
+  const handleLogout = async (event) => {
+    event.preventDefault();
+
+    fetch('/api/logout', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  };
+
+  function joinRoom(e) {
+    if (room) {
+      socket.emit('leave_room', { userName, room });
+      setRoom('');
+    }
     
     // Just nu går man med i alla rum här
     useEffect(() => {
@@ -63,6 +80,7 @@ const Main = ({userName = "Marcus"}) => {
                 </>
             )
         })}
+        <button onClick={handleLogout}>Log Out</button>
       </Stack>
       <Stack sx={{height:"100vh"}} flex="3" >
         <MessageList messages={rooms[currentRoom] || []} />
