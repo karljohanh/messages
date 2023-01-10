@@ -1,20 +1,36 @@
-import React from 'react'
-import { Stack } from '@mui/material';
+import React from 'react';
+import {
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+} from '@mui/material';
 
-const Rooms = ({rooms, handleChangeRoom, notifications, handleLogout}) => {
+const Rooms = ({ rooms, handleChangeRoom, notifications, handleLogout }) => {
   return (
     <>
-      {Object.keys(rooms).map((room) => {
-        return (
-          <React.Fragment key={room}>
-          <button  onClick={() => handleChangeRoom(room)}>{room}</button>
-          <p>{notifications[room] || ""}</p>
-          </React.Fragment>
-        )
-      })}
-      <button onClick={handleLogout}>Log Out</button>
-  </>
-  )
-}
+      <List>
+        {Object.keys(rooms).map((room) => {
+          return (
+            <ListItem
+              key={room}
+              onClick={() => handleChangeRoom(room)}
+              sx={{ '&:hover': { cursor: 'pointer' } }}
+            >
+              <ListItemAvatar>
+                <Avatar>{room.charAt(0)}</Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={room}
+                secondary={notifications[room] || ''}
+              />
+            </ListItem>
+          );
+        })}
+      </List>
+    </>
+  );
+};
 
-export default Rooms
+export default Rooms;

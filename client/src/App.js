@@ -1,8 +1,8 @@
 import { useState, useEffect, createContext } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from './styles/theme';
+import Navigation from './components/Navigation/Navigation';
 import Routes from './Routes';
+import { Container } from '@mui/system';
 
 export const UserContext = createContext({});
 
@@ -31,10 +31,18 @@ function App() {
 
   return (
     <UserContext.Provider value={userSession}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
+      <CssBaseline />
+      <Navigation />
+      <Container
+        maxWidth={false}
+        sx={{
+          height: '95vh',
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
         {loading ? <>loading...</> : <Routes />}
-      </ThemeProvider>
+      </Container>
     </UserContext.Provider>
   );
 }
