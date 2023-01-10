@@ -91,9 +91,7 @@ function Signup() {
       }
 
       const data = await res.json();
-      // this is just a visual feedback for user for this demo
-      // this will not be an error, rather we will show a different UI or redirect user to dashboard
-      // ideally we also want a way to confirm their username or identity
+
       setErrors({
         ...errors,
         fetchError: true,
@@ -133,7 +131,9 @@ function Signup() {
               alignItems: 'center',
             }}
           >
-            <h2>Register a new account</h2>
+            <Typography variant="h4" sx={{ my: '1rem' }}>
+              REGISTER NEW ACCOUNT
+            </Typography>
           </Container>
           <Stack
             component="form"
@@ -202,10 +202,13 @@ function Signup() {
                 ),
               }}
             />
-            {errors.repeatPassword && (
-              <FormHelperText error={errors.repeatPassword}>
+            {values.repeatPassword.length > 8 && errors.repeatPassword && (
+              <Typography
+                variant="p"
+                sx={{ textAlign: 'center', fontSize: '12px', color: 'red' }}
+              >
                 Password must be the same as above
-              </FormHelperText>
+              </Typography>
             )}
             <Box
               sx={{

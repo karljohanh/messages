@@ -9,6 +9,9 @@ let theme = createTheme({
       contrastText: '#fff',
     },
   },
+  typography: {
+    fontFamily: ['Montserrat', 'Rubik'].join(','),
+  },
 });
 
 theme = responsiveFontSizes(theme);

@@ -15,7 +15,7 @@ const Main = () => {
   const userContext = useContext(UserContext);
   const [rooms, setRooms] = useState({});
   const [notifications, setNotifications] = useState({});
-  const [currentRoom, setCurrentRoom] = useState('Native JavaScript');
+  const [currentRoom, setCurrentRoom] = useState('JavaScript');
 
   const navigate = useNavigate();
 

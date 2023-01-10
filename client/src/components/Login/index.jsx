@@ -79,10 +79,7 @@ function Login({}) {
       }
 
       const data = await res.json();
-      console.log({ data });
 
-      // this is just a visual feedback for user for this demo
-      // this will not be an error, rather we will show a different UI or redirect user to dashboard
       setErrors({
         ...errors,
         fetchError: true,
@@ -121,7 +118,9 @@ function Login({}) {
               alignItems: 'center',
             }}
           >
-            <h2>Login</h2>
+            <Typography variant="h3" sx={{ my: '1rem' }}>
+              LOGIN
+            </Typography>
           </Container>
           <Stack
             component="form"
@@ -160,6 +159,17 @@ function Login({}) {
                 ),
               }}
             />
+            {errors.fetchError && (
+              <Typography
+                variant="p"
+                sx={{
+                  textAlign: 'center',
+                  color: 'red',
+                }}
+              >
+                {errors.fetchErrorMsg}
+              </Typography>
+            )}
             <Box
               sx={{
                 display: 'flex',

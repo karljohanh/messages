@@ -16,7 +16,7 @@ let chatRoom = '';
 let allUsers = [];
 const chatRooms = [
   {
-    roomName: 'Native JavaScript',
+    roomName: 'JavaScript',
     users: [],
   },
   {

@@ -3,6 +3,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Navigation from './components/Navigation/Navigation';
 import Routes from './Routes';
 import { Container } from '@mui/system';
+import { ThemeProvider } from '@emotion/react';
+import theme from './styles/theme';
+import { Typography } from '@mui/material';
 
 export const UserContext = createContext({});
 
@@ -32,18 +35,31 @@ function App() {
   return (
     <UserContext.Provider value={userSession}>
       <CssBaseline />
-      <Navigation />
-      <Container
-        maxWidth={false}
-        sx={{
-          height: '95vh',
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        {loading ? <>loading...</> : <Routes />}
-      </Container>
+      <ThemeProvider theme={theme}>
+        <Navigation />
+        <Container
+          maxWidth={false}
+          sx={{
+            height: '95vh',
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          {loading ? (
+            <Typography
+              variant="h1"
+              sx={{
+                alignSelf: 'center',
+              }}
+            >
+              LOADING...
+            </Typography>
+          ) : (
+            <Routes />
+          )}
+        </Container>
+      </ThemeProvider>
     </UserContext.Provider>
   );
 }

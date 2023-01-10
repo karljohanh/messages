@@ -12,7 +12,7 @@ export default function Message({ msg }) {
   return (
     <ListItem alignItems="flex-start" sx={{ maxWidth: '60vw' }}>
       <ListItemAvatar>
-        <Avatar sx={{ bgcolor: 'blue' }}>{msg.userName[0]}</Avatar>
+        <Avatar sx={{ bgcolor: '#393939' }}>{msg.userName[0]}</Avatar>
       </ListItemAvatar>
       <ListItemText
         primary={

@@ -1,10 +1,10 @@
 import {
   List,
-  ListItem,
   ListItemAvatar,
   ListItemText,
   Avatar,
   Typography,
+  ListItemButton,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
@@ -24,7 +24,12 @@ const Users = ({ socket }) => {
       }}
     >
       {users.map((user) => (
-        <ListItem key={user.socketID}>
+        <ListItemButton
+          key={user.socketID}
+          sx={{
+            px: '3.8rem',
+          }}
+        >
           <ListItemAvatar>
             <Avatar sx={{ bgcolor: '#393939' }}>{user.username[0]}</Avatar>
           </ListItemAvatar>
@@ -37,7 +42,7 @@ const Users = ({ socket }) => {
               </>
             }
           />
-        </ListItem>
+        </ListItemButton>
       ))}
     </List>
   );

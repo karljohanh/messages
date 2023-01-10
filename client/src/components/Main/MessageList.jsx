@@ -5,7 +5,10 @@ import Message from './Message';
 const MessageList = ({ messages, room }) => {
   return (
     <List sx={{ flexGrow: '1', padding: '0', overflowY: 'scroll' }}>
-      <Typography variant="h3" sx={{ textAlign: 'center' }}>
+      <Typography
+        variant="h3"
+        sx={{ textAlign: 'center', fontWeight: 'light' }}
+      >
         {room.toUpperCase()}
       </Typography>
       {messages.map((message, i) => {

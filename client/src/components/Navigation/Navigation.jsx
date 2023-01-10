@@ -4,6 +4,7 @@ import { Paper, Typography, Button, Menu, MenuItem } from '@mui/material';
 import { Container } from '@mui/system';
 import { useContext } from 'react';
 import { UserContext } from '../../App';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const Navigation = () => {
   const userContext = useContext(UserContext);
@@ -11,9 +12,11 @@ const Navigation = () => {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -44,7 +47,11 @@ const Navigation = () => {
       >
         <Typography
           variant="h4"
-          sx={{ marginTop: '-5px', fontWeight: 'light' }}
+          sx={{
+            marginTop: '-5px',
+            fontWeight: 'normal',
+            letterSpacing: '0.2rem',
+          }}
         >
           messages
         </Typography>
@@ -54,6 +61,10 @@ const Navigation = () => {
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
           onClick={handleClick}
+          endIcon={userContext.username && <ArrowDropDownIcon />}
+          sx={{
+            height: '1rem',
+          }}
         >
           {userContext.username && userContext.username}
           {!userContext.username && <p>Welcome</p>}

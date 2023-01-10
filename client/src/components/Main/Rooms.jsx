@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   List,
-  ListItem,
   ListItemAvatar,
   ListItemText,
   Avatar,
+  ListItemButton,
 } from '@mui/material';
 
 const Rooms = ({ rooms, handleChangeRoom, notifications }) => {
+  const [selectedIndex, setSelectedIndex] = useState('JavaScript');
+
+  const handleListItemClick = (event, index) => {
+    setSelectedIndex(index);
+  };
   return (
     <>
       <List
@@ -19,11 +24,15 @@ const Rooms = ({ rooms, handleChangeRoom, notifications }) => {
       >
         {Object.keys(rooms).map((room) => {
           return (
-            <ListItem
+            <ListItemButton
               key={room}
-              onClick={() => handleChangeRoom(room)}
+              selected={selectedIndex === room}
+              onClick={(event) => {
+                handleChangeRoom(room);
+                handleListItemClick(event, room);
+              }}
               sx={{
-                '&:hover': { cursor: 'pointer' },
+                px: '2.7rem',
               }}
             >
               <ListItemAvatar>
@@ -33,7 +42,7 @@ const Rooms = ({ rooms, handleChangeRoom, notifications }) => {
                 primary={room}
                 secondary={notifications[room] || ''}
               />
-            </ListItem>
+            </ListItemButton>
           );
         })}
       </List>
