@@ -7,16 +7,24 @@ import {
   Avatar,
 } from '@mui/material';
 
-const Rooms = ({ rooms, handleChangeRoom, notifications, handleLogout }) => {
+const Rooms = ({ rooms, handleChangeRoom, notifications }) => {
   return (
     <>
-      <List>
+      <List
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignSelf: 'center',
+        }}
+      >
         {Object.keys(rooms).map((room) => {
           return (
             <ListItem
               key={room}
               onClick={() => handleChangeRoom(room)}
-              sx={{ '&:hover': { cursor: 'pointer' } }}
+              sx={{
+                '&:hover': { cursor: 'pointer' },
+              }}
             >
               <ListItemAvatar>
                 <Avatar>{room.charAt(0)}</Avatar>

@@ -37,6 +37,7 @@ function App() {
         maxWidth={false}
         sx={{
           height: '95vh',
+          width: '100%',
           display: 'flex',
           justifyContent: 'center',
         }}

@@ -3,7 +3,7 @@ import { TextField } from '@mui/material';
 
 import { UserContext } from '../../App';
 
-const SendMessage = ({ userName, room, socket }) => {
+const SendMessage = ({ room, socket }) => {
   const [message, setMessage] = useState('');
   const userContext = useContext(UserContext);
 
@@ -23,7 +23,9 @@ const SendMessage = ({ userName, room, socket }) => {
   return (
     <TextField
       sx={{
-        width: '100%',
+        width: '90%',
+        alignSelf: 'center',
+        mb: '1rem',
       }}
       id="outlined-basic"
       multiline

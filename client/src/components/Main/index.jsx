@@ -15,7 +15,7 @@ const Main = () => {
   const userContext = useContext(UserContext);
   const [rooms, setRooms] = useState({});
   const [notifications, setNotifications] = useState({});
-  const [currentRoom, setCurrentRoom] = useState('');
+  const [currentRoom, setCurrentRoom] = useState('Native JavaScript');
 
   const navigate = useNavigate();
 
@@ -42,6 +42,15 @@ const Main = () => {
   // Just nu går man med i alla rum här
   useEffect(() => {
     socket = io('http://localhost:5005/').connect();
+    //Detta är nytt
+    socket.on('connect', () => {
+      localStorage.setItem('userName', userContext.username);
+      socket.emit('newUser', {
+        username: userContext.username,
+        socketID: socket.id,
+      });
+    });
+
     socket.emit('join_room');
     socket.on('list_chatRooms', (allRooms) => {
       let tempRooms = {};
@@ -50,14 +59,7 @@ const Main = () => {
       });
       setRooms(tempRooms);
     });
-    localStorage.setItem('userName', userContext.username);
-    console.log(socket.id);
-    socket.emit('newUser', {
-      username: userContext.username,
-      socketID: socket.id,
-    });
-    // eslint-disable-next-line
-  }, []);
+  }, [userContext]);
 
   useEffect(() => {
     socket.on('receive_message', ({ room, ...message }) => {
@@ -83,13 +85,20 @@ const Main = () => {
   return (
     <Stack
       sx={{
-        mt: '1rem',
-        mb: '1rem',
         flexDirection: 'row',
-        width: '90vw',
+        width: 'inherit',
+        m: '10px 0',
       }}
     >
-      <Stack flex="1">
+      <Stack
+        flex="1"
+        sx={{
+          boxShadow: 5,
+          borderRadius: '5px',
+          m: '0 1rem',
+          backgroundColor: '#f5f5f5',
+        }}
+      >
         <Rooms
           rooms={rooms}
           handleChangeRoom={handleChangeRoom}
@@ -97,12 +106,20 @@ const Main = () => {
           handleLogout={handleLogout}
         />
       </Stack>
-      <Stack flex="3">
-        <MessageList messages={rooms[currentRoom] || []} />
+      <Stack flex="6" sx={{ boxShadow: 5, borderRadius: '5px' }}>
+        <MessageList messages={rooms[currentRoom] || []} room={currentRoom} />
         <SendMessage room={currentRoom} socket={socket} />
       </Stack>
-      <Stack flex="1">
-        <Users />
+      <Stack
+        flex="1"
+        sx={{
+          boxShadow: 5,
+          borderRadius: '5px',
+          m: '0 1rem',
+          backgroundColor: '#f5f5f5',
+        }}
+      >
+        {socket && <Users socket={socket} />}
       </Stack>
     </Stack>
   );

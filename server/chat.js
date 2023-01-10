@@ -47,10 +47,9 @@ module.exports = () => {
     console.log(`User connected ${socket.id}`);
 
     socket.on('newUser', (data) => {
-      console.log(data);
       users.push(data);
       console.log(users);
-      io.emit('newUserRsponse', users);
+      io.emit('newUserResponse', users);
     });
 
     // Write socket event listeners in here...

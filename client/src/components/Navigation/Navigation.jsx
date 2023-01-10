@@ -33,7 +33,7 @@ const Navigation = () => {
   return (
     <Paper elevation={1} square>
       <Container
-        maxWidth={false}
+        // maxWidth={false}
         sx={{
           height: '5vh',
           display: 'flex',
