@@ -53,7 +53,7 @@ app.use('/api', loginRouter);
 
 //START SERVER
 app.listen(port, () => {
-  console.log(`Server listening on port ${port}.`);
+  console.log(`Auth is listening on port ${port}.`);
 });
 
 chat();

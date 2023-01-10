@@ -92,8 +92,5 @@ module.exports = () => {
     });
   });
 
-  server.listen(port, () => console.log(`Server is running on port ${port}`));
+  server.listen(port, () => console.log(`Chat is listening on port ${port}.`));
 };
-
-//https://www.freecodecamp.org/news/build-a-realtime-chat-app-with-react-express-socketio-and-harperdb/
-// Denna guiden var väldigt bra att läsa igenom för att förstå bättre!
