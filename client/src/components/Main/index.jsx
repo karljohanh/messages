@@ -12,117 +12,129 @@ import { UserContext } from '../../App';
 let socket;
 
 const Main = () => {
-  const userContext = useContext(UserContext);
-  const [rooms, setRooms] = useState({});
-  const [notifications, setNotifications] = useState({});
-  const [currentRoom, setCurrentRoom] = useState('JavaScript');
+    const userContext = useContext(UserContext);
+    const [rooms, setRooms] = useState({});
+    const [notifications, setNotifications] = useState({});
+    const [currentRoom, setCurrentRoom] = useState('JavaScript');
 
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  function handleChangeRoom(room) {
-    setCurrentRoom(room);
-    setNotifications((notifications) => ({
-      ...notifications,
-      [room]: 0,
-    }));
-  }
-
-  const handleLogout = async (event) => {
-    event.preventDefault();
-
-    await fetch('/api/logout', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    navigate(0);
-  };
-
-  // Just nu går man med i alla rum här
-  useEffect(() => {
-    socket = io('http://localhost:5005/').connect();
-    //Detta är nytt
-    socket.on('connect', () => {
-      localStorage.setItem('userName', userContext.username);
-      socket.emit('newUser', {
-        username: userContext.username,
-        socketID: socket.id,
-      });
-    });
-
-    socket.emit('join_room');
-    socket.on('list_chatRooms', (allRooms) => {
-      let tempRooms = {};
-      allRooms.forEach((room) => {
-        tempRooms[room] = [];
-      });
-      setRooms(tempRooms);
-    });
-  }, [userContext]);
-
-  useEffect(() => {
-    socket.on('receive_message', ({ room, ...message }) => {
-      console.log('receive_message: ', message);
-      setRooms((rooms) => {
-        const messages = [...(rooms[room] || []), message];
-        return { ...rooms, [room]: messages };
-      });
-      if (room !== currentRoom) {
+    function handleChangeRoom(room) {
+        setCurrentRoom(room);
         setNotifications((notifications) => ({
-          ...notifications,
-          [room]: (notifications[room] || 0) + 1,
+            ...notifications,
+            [room]: 0
         }));
-      }
-    });
+    }
 
-    return () => {
-      socket.off('receive_message');
+    const handleLogout = async (event) => {
+        event.preventDefault();
+
+        await fetch('/api/logout', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        navigate(0);
     };
-    // eslint-disable-next-line
-  }, [currentRoom]);
 
-  return (
-    <Stack
-      sx={{
-        flexDirection: 'row',
-        width: 'inherit',
-        m: '10px 0',
-      }}
-    >
-      <Stack
-        flex="1"
-        sx={{
-          boxShadow: 5,
-          borderRadius: '5px',
-          m: '0 1rem',
-          backgroundColor: '#f5f5f5',
-        }}
-      >
-        <Rooms
-          rooms={rooms}
-          handleChangeRoom={handleChangeRoom}
-          notifications={notifications}
-          handleLogout={handleLogout}
-        />
-      </Stack>
-      <Stack flex="6" sx={{ boxShadow: 5, borderRadius: '5px' }}>
-        <MessageList messages={rooms[currentRoom] || []} room={currentRoom} />
-        <SendMessage room={currentRoom} socket={socket} />
-      </Stack>
-      <Stack
-        flex="1"
-        sx={{
-          boxShadow: 5,
-          borderRadius: '5px',
-          m: '0 1rem',
-          backgroundColor: '#f5f5f5',
-        }}
-      >
-        {socket && <Users socket={socket} />}
-      </Stack>
-    </Stack>
-  );
+    // Just nu går man med i alla rum här
+    useEffect(() => {
+        socket = io('http://localhost:5005/').connect();
+        //Detta är nytt
+        socket.on('connect', () => {
+            localStorage.setItem('userName', userContext.username);
+            socket.emit('newUser', {
+                username: userContext.username,
+                socketID: socket.id
+            });
+        });
+
+        socket.emit('join_room');
+        socket.on('list_chatRooms', (allRooms) => {
+            console.log('NYA RUM!');
+            let tempRooms = {};
+            allRooms.forEach((room) => {
+                tempRooms[room] = [];
+            });
+            setRooms(tempRooms);
+        });
+
+        socket.on('private_room', ({ room }) => {
+            socket.emit('join_room', room);
+            setCurrentRoom(room);
+            // setRooms({ ...rooms, room: [] })
+        });
+        // socket.off('list_chatRooms');
+    }, [userContext]);
+
+    useEffect(() => {
+        socket.on('receive_message', ({ room, ...message }) => {
+            setRooms((rooms) => {
+                const messages = [...(rooms[room] || []), message];
+                return { ...rooms, [room]: messages };
+            });
+            if (room !== currentRoom) {
+                setNotifications((notifications) => ({
+                    ...notifications,
+                    [room]: (notifications[room] || 0) + 1
+                }));
+            }
+        });
+
+        return () => {
+            socket.off('receive_message');
+        };
+        // eslint-disable-next-line
+    }, [currentRoom]);
+
+    return (
+        <Stack
+            sx={{
+                flexDirection: 'row',
+                width: 'inherit',
+                m: '10px 0'
+            }}
+        >
+            <Stack
+                flex='1'
+                sx={{
+                    boxShadow: 5,
+                    borderRadius: '5px',
+                    m: '0 1rem',
+                    backgroundColor: '#f5f5f5'
+                }}
+            >
+                <Rooms
+                    rooms={rooms}
+                    handleChangeRoom={handleChangeRoom}
+                    notifications={notifications}
+                    handleLogout={handleLogout}
+                />
+            </Stack>
+            <Stack flex='6' sx={{ boxShadow: 5, borderRadius: '5px' }}>
+                <MessageList
+                    messages={rooms[currentRoom] || []}
+                    room={currentRoom}
+                />
+                <SendMessage room={currentRoom} socket={socket} />
+            </Stack>
+            <Stack
+                flex='1'
+                sx={{
+                    boxShadow: 5,
+                    borderRadius: '5px',
+                    m: '0 1rem',
+                    backgroundColor: '#f5f5f5'
+                }}
+            >
+                {socket && (
+                    <Users socket={socket} setCurrentRoom={setCurrentRoom} />
+                )}
+            </Stack>
+        </Stack>
+    );
 };
 
 export default Main;

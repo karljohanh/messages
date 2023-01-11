@@ -1,51 +1,66 @@
 import {
-  List,
-  ListItemAvatar,
-  ListItemText,
-  Avatar,
-  Typography,
-  ListItemButton,
+    List,
+    ListItemAvatar,
+    ListItemText,
+    Avatar,
+    Typography,
+    ListItemButton
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
-const Users = ({ socket }) => {
-  const [users, setUsers] = useState([]);
+import { UserContext } from '../../App';
 
-  useEffect(() => {
-    socket.on('newUserResponse', (data) => setUsers(data));
-  }, [socket, users]);
+const Users = ({ socket, setCurrentRoom }) => {
+    const [users, setUsers] = useState([]);
+    const userContext = useContext(UserContext);
 
-  return (
-    <List
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignSelf: 'center',
-      }}
-    >
-      {users.map((user) => (
-        <ListItemButton
-          key={user.socketID}
-          sx={{
-            px: '3.8rem',
-          }}
+    useEffect(() => {
+        socket.on('newUserResponse', (data) => setUsers(data));
+    }, [socket, users]);
+
+    return (
+        <List
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignSelf: 'center'
+            }}
         >
-          <ListItemAvatar>
-            <Avatar sx={{ bgcolor: '#393939' }}>{user.username[0]}</Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <>
-                <Typography sx={{ display: 'inline' }}>
-                  {user.username}
-                </Typography>
-              </>
-            }
-          />
-        </ListItemButton>
-      ))}
-    </List>
-  );
+            {users.map((user) => (
+                <ListItemButton
+                    key={user.socketID}
+                    sx={{
+                        px: '3.8rem'
+                    }}
+                    onClick={() => {
+                        setCurrentRoom(
+                            user.username + '/' + userContext.username
+                        );
+                        socket.emit('private_message', {
+                            toID: user.socketID,
+                            toUsername: user.username,
+                            fromUsername: userContext.username
+                        });
+                    }}
+                >
+                    <ListItemAvatar>
+                        <Avatar sx={{ bgcolor: '#393939' }}>
+                            {user.username[0]}
+                        </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                        primary={
+                            <>
+                                <Typography sx={{ display: 'inline' }}>
+                                    {user.username}
+                                </Typography>
+                            </>
+                        }
+                    />
+                </ListItemButton>
+            ))}
+        </List>
+    );
 };
 
 export default Users;
