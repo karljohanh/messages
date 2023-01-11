@@ -6,32 +6,32 @@ require('dotenv').config();
 const cors = require('cors');
 
 const app = express();
-app.use(cors)
+app.use(cors);
 const server = http.createServer(app);
 
 const port = process.env.PORT || 5005;
 
-const CHAT_BOT = "ChatBot"
-let chatRoom = ""
-let allUsers = []
+const CHAT_BOT = 'ChatBot';
+let chatRoom = '';
+let allUsers = [];
 const chatRooms = [
   {
-    roomName: "Native JavaScript",
+    roomName: 'JavaScript',
     users: [],
   },
   {
-    roomName: "React",
+    roomName: 'React',
     users: [],
   },
   {
-    roomName: "VueS",
+    roomName: 'VueS',
     users: [],
   },
   {
-    roomName: "Angular",
+    roomName: 'Angular',
     users: [],
-  }
-]
+  },
+];
 
 module.exports = () => {
   const io = new Server(server, {
@@ -41,15 +41,26 @@ module.exports = () => {
     },
   });
 
+  let users = [];
+
   io.on('connection', (socket) => {
     console.log(`User connected ${socket.id}`);
 
+    socket.on('newUser', (data) => {
+      users.push(data);
+      console.log(users);
+      io.emit('newUserResponse', users);
+    });
+
     // Write socket event listeners in here...
     socket.on('join_room', (data) => {
-      socket.emit("list_chatRooms", chatRooms.map((chatRoomObj) => chatRoomObj.roomName))
+      socket.emit(
+        'list_chatRooms',
+        chatRooms.map((chatRoomObj) => chatRoomObj.roomName)
+      );
       chatRooms.forEach((room) => {
-        socket.join(room.roomName)
-      })
+        socket.join(room.roomName);
+      });
     });
 
     // Sending messages
@@ -59,9 +70,9 @@ module.exports = () => {
 
     socket.on('leave_room', (data) => {
       const { userName, room } = data;
-      const createdTime = new Date()
+      const createdTime = new Date();
       allUsers = allUsers.filter((user) => user.id !== socket.id);
-      
+
       // Skickar uppdaterad lista med alla användare
       io.in(room).emit('chatroom_users', allUsers);
 
@@ -69,18 +80,15 @@ module.exports = () => {
       socket.to(room).emit('receive_message', {
         message: `${userName} lämnade rummet`,
         userName: CHAT_BOT,
-        createdTime: createdTime
+        createdTime: createdTime,
       });
     });
 
-    socket.on('disconnect', (reason) => {
-      if (
-        reason === 'io server disconnect' ||
-        reason === 'client namespace disconnect'
-      ) {
-        console.log('User disconnected');
-      }
-      console.log("disconnect: ", socket.id)
+    socket.on('disconnect', () => {
+      users = users.filter((user) => user.socketID !== socket.id);
+      io.emit('newUserResponse', users);
+      socket.disconnect();
+      console.log('disconnect: ', socket.id);
     });
   });
 

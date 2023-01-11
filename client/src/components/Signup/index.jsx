@@ -10,22 +10,13 @@ import {
   Button,
   Box,
   Divider,
-  Avatar,
   Typography,
   TextField,
-  FilledInput,
   InputAdornment,
   IconButton,
-  InputLabel,
-  FormControl,
   FormHelperText,
 } from '@mui/material';
-import {
-  Face as FaceIcon,
-  Visibility,
-  VisibilityOff,
-} from '@mui/icons-material';
-import theme from '../../styles/theme';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 function Signup() {
   const [values, setValues] = useState({
@@ -100,9 +91,7 @@ function Signup() {
       }
 
       const data = await res.json();
-      // this is just a visual feedback for user for this demo
-      // this will not be an error, rather we will show a different UI or redirect user to dashboard
-      // ideally we also want a way to confirm their username or identity
+
       setErrors({
         ...errors,
         fetchError: true,
@@ -128,7 +117,10 @@ function Signup() {
 
   return (
     <>
-      <Container sx={{ marginTop: 'calc(100vh - 50%)' }} maxWidth="sm">
+      <Container
+        maxWidth="sm"
+        sx={{ justifySelf: 'center', alignSelf: 'center' }}
+      >
         <Paper elevation={6}>
           <Container
             maxWidth="sm"
@@ -137,20 +129,11 @@ function Signup() {
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              paddingTop: '20px',
             }}
           >
-            <Avatar
-              sx={{
-                width: 80,
-                height: 80,
-                bgcolor: theme.palette.primary.main,
-                boxShadow: '0px 0px 8px rgba(131,153,167,0.99)',
-              }}
-            >
-              <FaceIcon sx={{ fontSize: 70 }} />
-            </Avatar>
-            <h2>Register a new account</h2>
+            <Typography variant="h4" sx={{ my: '1rem' }}>
+              REGISTER NEW ACCOUNT
+            </Typography>
           </Container>
           <Stack
             component="form"
@@ -160,7 +143,7 @@ function Signup() {
             sx={{ bgcolor: '#f5f5f6', padding: '40px' }}
           >
             <TextField
-              variant="filled"
+              variant="outlined"
               type="username"
               label="Username"
               value={values.username}
@@ -169,15 +152,15 @@ function Signup() {
               helperText={errors.username && 'Please insert a valid username.'}
             />
 
-            <FormControl variant="filled">
-              <InputLabel htmlFor="password-field">Password</InputLabel>
-              <FilledInput
-                id="password-field"
-                type={values.showPassword ? 'text' : 'password'}
-                value={values.password}
-                onChange={handleChange('password')}
-                error={errors.password}
-                endAdornment={
+            <TextField
+              variant="outlined"
+              type={values.showPassword ? 'text' : 'password'}
+              label="Password"
+              value={values.password}
+              onChange={handleChange('password')}
+              error={errors.password}
+              InputProps={{
+                endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle password visibility"
@@ -187,24 +170,22 @@ function Signup() {
                       {values.showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
-                }
-              />
+                ),
+              }}
+            />
 
-              <FormHelperText error={errors.password}>
-                Password must be at least 8 characters.
-              </FormHelperText>
-            </FormControl>
+            <FormHelperText error={errors.password}>
+              Password must be at least 8 characters.
+            </FormHelperText>
 
-            <FormControl variant="filled">
-              <InputLabel htmlFor="password-repeat-field">
-                Repeat password
-              </InputLabel>
-              <FilledInput
-                id="password-repeat-field"
-                type={values.showRepeatPassword ? 'text' : 'password'}
-                value={values.repeatPassword}
-                onChange={handleChange('repeatPassword')}
-                endAdornment={
+            <TextField
+              variant="outlined"
+              type={values.showRepeatPassword ? 'text' : 'password'}
+              label="Repeat Password"
+              value={values.repeatPassword}
+              onChange={handleChange('repeatPassword')}
+              InputProps={{
+                endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle password visibility"
@@ -218,14 +199,17 @@ function Signup() {
                       )}
                     </IconButton>
                   </InputAdornment>
-                }
-              />
-              {errors.repeatPassword && (
-                <FormHelperText error={errors.repeatPassword}>
-                  Password must be the same as above
-                </FormHelperText>
-              )}
-            </FormControl>
+                ),
+              }}
+            />
+            {values.repeatPassword.length > 8 && errors.repeatPassword && (
+              <Typography
+                variant="p"
+                sx={{ textAlign: 'center', fontSize: '12px', color: 'red' }}
+              >
+                Password must be the same as above
+              </Typography>
+            )}
             <Box
               sx={{
                 display: 'flex',

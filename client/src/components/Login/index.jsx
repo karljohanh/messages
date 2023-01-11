@@ -11,22 +11,12 @@ import {
   Button,
   Box,
   Divider,
-  Avatar,
   Typography,
   TextField,
-  FilledInput,
   InputAdornment,
   IconButton,
-  InputLabel,
-  FormControl,
-  FormHelperText,
 } from '@mui/material';
-import {
-  Face as FaceIcon,
-  Visibility,
-  VisibilityOff,
-} from '@mui/icons-material';
-import theme from '../../styles/theme';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 // eslint-disable-next-line
 function Login({}) {
@@ -41,7 +31,7 @@ function Login({}) {
     fetchError: false,
     fetchErrorMsg: '',
   });
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleChange = (fieldName) => (event) => {
     const currValue = event.target.value;
@@ -89,10 +79,7 @@ function Login({}) {
       }
 
       const data = await res.json();
-      console.log({ data });
 
-      // this is just a visual feedback for user for this demo
-      // this will not be an error, rather we will show a different UI or redirect user to dashboard
       setErrors({
         ...errors,
         fetchError: true,
@@ -103,7 +90,7 @@ function Login({}) {
         password: '',
         showPassword: false,
       });
-      navigate(0)
+      navigate(0);
       return;
     } catch (error) {
       setErrors({
@@ -117,7 +104,10 @@ function Login({}) {
 
   return (
     <>
-      <Container sx={{ marginTop: 'calc(100vh - 50%)' }} maxWidth="xs">
+      <Container
+        maxWidth="xs"
+        sx={{ justifySelf: 'center', alignSelf: 'center' }}
+      >
         <Paper elevation={6}>
           <Container
             maxWidth="sm"
@@ -126,20 +116,11 @@ function Login({}) {
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              paddingTop: '20px',
             }}
           >
-            <Avatar
-              sx={{
-                width: 80,
-                height: 80,
-                bgcolor: theme.palette.primary.main,
-                boxShadow: '0px 0px 8px rgba(131,153,167,0.99)',
-              }}
-            >
-              <FaceIcon sx={{ fontSize: 70 }} />
-            </Avatar>
-            <h2>Login</h2>
+            <Typography variant="h3" sx={{ my: '1rem' }}>
+              LOGIN
+            </Typography>
           </Container>
           <Stack
             component="form"
@@ -149,7 +130,7 @@ function Login({}) {
             sx={{ bgcolor: '#f5f5f6', padding: '40px' }}
           >
             <TextField
-              variant="filled"
+              variant="outlined"
               type="username"
               label="Username"
               value={values.username}
@@ -157,15 +138,15 @@ function Login({}) {
               error={errors.username}
             />
 
-            <FormControl variant="filled">
-              <InputLabel htmlFor="password-field">Password</InputLabel>
-              <FilledInput
-                id="password-field"
-                type={values.showPassword ? 'text' : 'password'}
-                value={values.password}
-                onChange={handleChange('password')}
-                error={errors.password}
-                endAdornment={
+            <TextField
+              variant="outlined"
+              type={values.showPassword ? 'text' : 'password'}
+              label="Password"
+              value={values.password}
+              onChange={handleChange('password')}
+              error={errors.password}
+              InputProps={{
+                endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle password visibility"
@@ -175,9 +156,20 @@ function Login({}) {
                       {values.showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
-                }
-              />
-            </FormControl>
+                ),
+              }}
+            />
+            {errors.fetchError && (
+              <Typography
+                variant="p"
+                sx={{
+                  textAlign: 'center',
+                  color: 'red',
+                }}
+              >
+                {errors.fetchErrorMsg}
+              </Typography>
+            )}
             <Box
               sx={{
                 display: 'flex',
@@ -187,8 +179,9 @@ function Login({}) {
               <Button
                 variant="contained"
                 size="large"
-                type="submit"
+                type="button"
                 disabled={errors.username || errors.password}
+                onClick={handleSubmit}
                 sx={{
                   minWidth: '70%',
                 }}
@@ -196,10 +189,9 @@ function Login({}) {
                 Login
               </Button>
             </Box>
-            {errors.fetchError && (
-              <FormHelperText error>{errors.fetchErrorMsg}</FormHelperText>
-            )}
+
             <Divider />
+
             <Typography paragraph align="center">
               Don't have an account yet?{' '}
               <Link component={RouterLink} to="/signup">
