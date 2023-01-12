@@ -11,4 +11,4 @@ The chat offers login, registration & authorization, a few pre-determined rooms 
 Our Goal
 ---
 
-TBC...
+Our goal was to create a user-friendly chat application utilizing modern web technologies. We established secure session management using express-session and MongoDB. We also used Socket.IO for fast messaging and easy switching between pre-determined rooms and direct messaging. We aimed to improve our skills in backend development, React, web sockets.
