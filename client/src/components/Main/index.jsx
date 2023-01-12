@@ -53,17 +53,24 @@ const Main = () => {
 
     socket.emit('join_room');
     socket.on('list_chatRooms', (allRooms) => {
+      console.log('NYA RUM!');
       let tempRooms = {};
       allRooms.forEach((room) => {
         tempRooms[room] = [];
       });
       setRooms(tempRooms);
     });
+
+    socket.on('private_room', ({ room }) => {
+      socket.emit('join_room', room);
+      setCurrentRoom(room);
+      // setRooms({ ...rooms, room: [] })
+    });
+    // socket.off('list_chatRooms');
   }, [userContext]);
 
   useEffect(() => {
     socket.on('receive_message', ({ room, ...message }) => {
-      console.log('receive_message: ', message);
       setRooms((rooms) => {
         const messages = [...(rooms[room] || []), message];
         return { ...rooms, [room]: messages };
@@ -79,7 +86,6 @@ const Main = () => {
     return () => {
       socket.off('receive_message');
     };
-    // eslint-disable-next-line
   }, [currentRoom]);
 
   return (
@@ -119,7 +125,7 @@ const Main = () => {
           backgroundColor: '#f5f5f5',
         }}
       >
-        {socket && <Users socket={socket} />}
+        {socket && <Users socket={socket} setCurrentRoom={setCurrentRoom} />}
       </Stack>
     </Stack>
   );

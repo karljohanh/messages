@@ -33,12 +33,12 @@ const mongoDBstore = new MongoDBStore({
 app.use(
   session({
     secret: 'a1s2d3f4g5h6',
-    name: 'session-id', // cookies name to be put in "key" field in postman
+    name: 'session-id',
     store: mongoDBstore,
     cookie: {
-      maxAge: MAX_AGE, // this is when our cookies will expired and the session will not be valid anymore (user will be log out)
+      maxAge: MAX_AGE,
       sameSite: false,
-      secure: false, // to turn on just in production
+      secure: false, // Set true on production
     },
     resave: true,
     saveUninitialized: false,
