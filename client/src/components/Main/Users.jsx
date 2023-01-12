@@ -6,10 +6,13 @@ import {
   Typography,
   ListItemButton,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
-const Users = ({ socket }) => {
+import { UserContext } from '../../App';
+
+const Users = ({ socket, setCurrentRoom }) => {
   const [users, setUsers] = useState([]);
+  const userContext = useContext(UserContext);
 
   useEffect(() => {
     socket.on('newUserResponse', (data) => setUsers(data));
@@ -28,6 +31,14 @@ const Users = ({ socket }) => {
           key={user.socketID}
           sx={{
             px: '3.8rem',
+          }}
+          onClick={() => {
+            setCurrentRoom(user.username + '/' + userContext.username);
+            socket.emit('private_message', {
+              toID: user.socketID,
+              toUsername: user.username,
+              fromUsername: userContext.username,
+            });
           }}
         >
           <ListItemAvatar>

@@ -20,6 +20,7 @@ router.post('/register', async (req, res) => {
 
   const newUser = new UserSchema({ username, password });
   bcrypt.hash(password, 7, async (err, hash) => {
+    // fucntion saves hashed password & user info in db
     if (err)
       return res.status(400).json({ msg: 'error while saving the password' });
 
@@ -43,9 +44,9 @@ router.post(`/login`, async (req, res) => {
     return res.status(400).json({ msg: 'User not found' });
   }
 
-  const matchPassword = await bcrypt.compare(password, user.password);
+  const matchPassword = await bcrypt.compare(password, user.password); // compares input with stored password
   if (matchPassword) {
-    const userSession = { username: user.username }; // creating user session to keep user loggedin also on refresh
+    const userSession = { username: user.username }; // creating user session to keep user logged in
     req.session.user = userSession; // attach user session to session object from express-session
 
     return res
@@ -65,6 +66,7 @@ router.delete(`/logout`, async (req, res) => {
   });
 });
 
+// Check if user already us authorized.
 router.get('/isAuth', async (req, res) => {
   if (req.session.user) {
     return res.json(req.session.user);

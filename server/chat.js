@@ -12,8 +12,6 @@ const server = http.createServer(app);
 const port = process.env.PORT || 5005;
 
 const CHAT_BOT = 'ChatBot';
-let chatRoom = '';
-let allUsers = [];
 const chatRooms = [
   {
     roomName: 'JavaScript',
@@ -44,22 +42,40 @@ module.exports = () => {
   let users = [];
 
   io.on('connection', (socket) => {
-    console.log(`User connected ${socket.id}`);
+    // Socket event listeners
+    console.log(`User connected: ${socket.id}`);
 
+    // Online users
     socket.on('newUser', (data) => {
       users.push(data);
       console.log(users);
       io.emit('newUserResponse', users);
     });
 
-    // Write socket event listeners in here...
-    socket.on('join_room', (data) => {
-      socket.emit(
-        'list_chatRooms',
-        chatRooms.map((chatRoomObj) => chatRoomObj.roomName)
-      );
-      chatRooms.forEach((room) => {
-        socket.join(room.roomName);
+    // Join pre-determined rooms
+    socket.on('join_room', (room) => {
+      if (room) {
+        socket.join(room);
+      } else {
+        socket.emit(
+          'list_chatRooms',
+          chatRooms.map((chatRoomObj) => chatRoomObj.roomName)
+        );
+        chatRooms.forEach((room) => {
+          socket.join(room.roomName);
+        });
+      }
+    });
+
+    // DM
+    socket.on('private_message', (data) => {
+      const myID = socket.id;
+      const room = data.toUsername + '/' + data.fromUsername;
+      socket.join(room);
+      socket.to(data.toID).emit('private_room', {
+        fromUsername: data.fromUsername,
+        myID,
+        room,
       });
     });
 
@@ -68,32 +84,14 @@ module.exports = () => {
       io.in(data.room).emit('receive_message', data);
     });
 
-    socket.on('leave_room', (data) => {
-      const { userName, room } = data;
-      const createdTime = new Date();
-      allUsers = allUsers.filter((user) => user.id !== socket.id);
-
-      // Skickar uppdaterad lista med alla användare
-      io.in(room).emit('chatroom_users', allUsers);
-
-      // Skickar meddelande om att användaren lämnat
-      socket.to(room).emit('receive_message', {
-        message: `${userName} lämnade rummet`,
-        userName: CHAT_BOT,
-        createdTime: createdTime,
-      });
-    });
-
+    // On disconnect
     socket.on('disconnect', () => {
       users = users.filter((user) => user.socketID !== socket.id);
       io.emit('newUserResponse', users);
       socket.disconnect();
-      console.log('disconnect: ', socket.id);
+      console.log('User disconnected: ', socket.id);
     });
   });
 
-  server.listen(port, () => console.log(`Server is running on port ${port}`));
+  server.listen(port, () => console.log(`Chat is listening on port ${port}.`));
 };
-
-//https://www.freecodecamp.org/news/build-a-realtime-chat-app-with-react-express-socketio-and-harperdb/
-// Denna guiden var väldigt bra att läsa igenom för att förstå bättre!
